@@ -1,20 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { buildElectionEvent, getCalendarUrl, createCalendarEvent } from "@/lib/google/calendar";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
-
-interface ElectionPhase {
-  id: number;
-  name: string;
-  status: "completed" | "active" | "upcoming";
-  dateRange: string;
-  description: string;
-  details: string[];
-  icon: string;
-  onChainTx?: string;
-}
+import type { ElectionPhase } from "@/types/election";
 
 const electionPhases: ElectionPhase[] = [
   {

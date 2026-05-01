@@ -2,13 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useWallet } from "@/components/wallet/WalletProvider";
-import WalletModal from "@/components/wallet/WalletModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/lib/google/translate";
 import { signInWithGoogle, signOutUser, getFirebaseAuth } from "@/lib/firebase";
 import { onAuthStateChanged, type User } from "firebase/auth";
+
+// Lazy-load WalletModal — only needed on click interaction
+const WalletModal = dynamic(
+  () => import("@/components/wallet/WalletModal"),
+  { ssr: false }
+);
 
 const navLinks = [
   { href: "/", label: "Home", icon: "⌂" },

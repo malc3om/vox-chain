@@ -9,6 +9,20 @@ import {
   type ReactNode,
 } from "react";
 
+/** Midnight Lace wallet extension type stubs. */
+interface MidnightWalletAPI {
+  state: () => Promise<{ address?: string }>;
+  balanceAndProveResult?: () => Promise<{ balance: string }>;
+}
+
+interface MidnightWindow {
+  midnight?: {
+    mnLace?: {
+      enable: () => Promise<MidnightWalletAPI>;
+    };
+  };
+}
+
 export interface WalletState {
   connected: boolean;
   connecting: boolean;
@@ -49,9 +63,7 @@ export function useWallet() {
  */
 function detectWallet(): boolean {
   if (typeof window === "undefined") return false;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const midnight = (window as any).midnight;
-  return !!midnight?.mnLace;
+  return !!(window as unknown as MidnightWindow).midnight?.mnLace;
 }
 
 /**
@@ -123,9 +135,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       // 2. Connect to wallet & sign
       if (detectWallet()) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const midnight = (window as any).midnight;
-        const wallet = midnight.mnLace;
+        const midnight = (window as unknown as MidnightWindow).midnight!;
+        const wallet = midnight.mnLace!;
 
         const walletAPI = await wallet.enable();
         const walletState = await walletAPI.state();

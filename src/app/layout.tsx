@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
+import Loading from "./loading";
 import Providers from "./providers";
+import Navbar from "@/components/layout/Navbar";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -71,7 +73,9 @@ export default function RootLayout({
           <Navbar />
 
           {/* Main Content */}
-          <main id="main-content" className="flex-1 relative z-10">{children}</main>
+          <main id="main-content" className="flex-1 relative z-10">
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </main>
 
           {/* Footer */}
           <footer className="relative z-10 border-t border-border py-12 px-[var(--spacing-page)] bg-bg-surface mt-24">
