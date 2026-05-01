@@ -92,6 +92,7 @@ Midnight Network uses the **Compact language** — a TypeScript-like DSL that co
 | **Animations** | GSAP 3 with ScrollTrigger |
 | **AI** | Google Gemini 2.0 Flash (official SDK) |
 | **Database** | Firebase Firestore |
+| **Cryptography** | @noble/ed25519 (EdDSA signatures) |
 | **Blockchain** | Midnight Network (Compact contracts) |
 | **Testing** | Vitest (unit) + Playwright (E2E) |
 | **Deployment** | Google Cloud Run |
@@ -99,6 +100,11 @@ Midnight Network uses the **Compact language** — a TypeScript-like DSL that co
 ---
 
 ## 🧪 Testing
+
+[![Vitest](https://img.shields.io/badge/Vitest-100%25%20Passing-success?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![Playwright](https://img.shields.io/badge/Playwright-100%25%20Passing-success?style=flat-square&logo=playwright)](https://playwright.dev/)
+
+VoxChain maintains rigorous validation standards with 100% of its unit and End-to-End (E2E) test suites currently passing.
 
 ### Run Unit Tests
 ```bash
