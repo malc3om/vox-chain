@@ -9,10 +9,10 @@ test.describe("Homepage", () => {
 
   test("displays navbar with all links", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: /timeline/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /ask ai/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /eligibility/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /quiz/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /timeline/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /ask ai/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /eligibility/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /quiz/i }).first()).toBeVisible();
   });
 
   test("hero search input accepts text", async ({ page }) => {
