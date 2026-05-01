@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { logVerificationEvent } from "@/lib/firebase";
 
 type Step = "intro" | "connect" | "input" | "proving" | "result";
 
@@ -19,8 +20,15 @@ export default function EligibilityPage() {
     e.preventDefault();
     setStep("proving");
     setTimeout(() => {
-      setIsEligible(parseInt(formData.age) >= 18 && formData.constituency.trim().length > 0);
+      const eligible = parseInt(formData.age) >= 18 && formData.constituency.trim().length > 0;
+      setIsEligible(eligible);
       setStep("result");
+      // Log anonymized verification event to Firebase
+      logVerificationEvent({
+        eligible,
+        proofGenerated: true,
+        sessionId: crypto.randomUUID(),
+      });
     }, 3000);
   }
 

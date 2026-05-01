@@ -1,153 +1,93 @@
 /**
  * Gemini AI Client for VoxChain
- * 
- * Streaming interface for the Gemini API.
- * Handles civic Q&A with the configured system prompt.
- * Falls back to simulated responses when no API key is set.
+ *
+ * Uses the official @google/generative-ai SDK for type-safe,
+ * streaming AI responses. Falls back to a curated civic knowledge
+ * base when no API key is configured.
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const GEMINI_MODEL = "gemini-2.5-flash";
-const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=sse&key=`;
-
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { CIVIC_SYSTEM_PROMPT } from "./prompts";
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
+const GEMINI_MODEL = "gemini-2.0-flash";
+
+/** Lazily initialized Gemini client (server-side only). */
+function getClient(): GoogleGenerativeAI {
+  if (!GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is not configured.");
+  }
+  return new GoogleGenerativeAI(GEMINI_API_KEY);
+}
 
 export interface GeminiMessage {
   role: "user" | "model";
   parts: { text: string }[];
 }
 
+/** Safety settings applied to all requests. */
+const SAFETY_SETTINGS = [
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+];
+
 /**
- * Check if Gemini API is configured.
+ * Returns true when the Gemini API key is present in the environment.
  */
 export function isGeminiConfigured(): boolean {
   return GEMINI_API_KEY.length > 0;
 }
 
 /**
- * Send a message to Gemini and get a streaming response.
- * Returns a ReadableStream of text chunks.
+ * Send a message to Gemini and return a streaming ReadableStream<string>.
+ * Each chunk yielded is a plain text delta (not raw JSON/SSE).
  */
 export async function streamGeminiResponse(
   userMessage: string,
   history: GeminiMessage[] = []
 ): Promise<ReadableStream<string>> {
-  if (!isGeminiConfigured()) {
-    throw new Error("GEMINI_API_KEY not configured");
-  }
+  const client = getClient();
 
-  const contents: GeminiMessage[] = [
-    ...history,
-    { role: "user", parts: [{ text: userMessage }] },
-  ];
-
-  const response = await fetch(`${GEMINI_ENDPOINT}${GEMINI_API_KEY}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      system_instruction: {
-        parts: [{ text: CIVIC_SYSTEM_PROMPT }],
-      },
-      contents,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-        topP: 0.9,
-      },
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_HATE_SPEECH",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE",
-        },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE",
-        },
-      ],
-    }),
+  const model = client.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: CIVIC_SYSTEM_PROMPT,
+    safetySettings: SAFETY_SETTINGS,
+    generationConfig: { temperature: 0.7, maxOutputTokens: 1024, topP: 0.9 },
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Gemini API error: ${response.status} - ${error}`);
-  }
-
-  // Parse SSE stream into text chunks
-  const reader = response.body!.getReader();
-  const decoder = new TextDecoder();
+  const chat = model.startChat({ history });
+  const result = await chat.sendMessageStream(userMessage);
 
   return new ReadableStream<string>({
     async pull(controller) {
-      const { done, value } = await reader.read();
-      if (done) {
-        controller.close();
-        return;
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) controller.enqueue(text);
       }
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
-
-      for (const line of lines) {
-        if (line.startsWith("data: ")) {
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") {
-            controller.close();
-            return;
-          }
-          try {
-            const parsed = JSON.parse(data);
-            const text =
-              parsed?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            if (text) {
-              controller.enqueue(text);
-            }
-          } catch {
-            // Skip malformed JSON chunks
-          }
-        }
-      }
+      controller.close();
     },
   });
 }
 
 /**
- * Send a non-streaming message to Gemini.
- * Returns the full text response.
+ * Send a non-streaming message and return the full text response.
  */
 export async function askGemini(
   userMessage: string,
   history: GeminiMessage[] = []
 ): Promise<string> {
-  if (!isGeminiConfigured()) {
-    throw new Error("GEMINI_API_KEY not configured");
-  }
+  const client = getClient();
 
-  const contents: GeminiMessage[] = [
-    ...history,
-    { role: "user", parts: [{ text: userMessage }] },
-  ];
-
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      system_instruction: {
-        parts: [{ text: CIVIC_SYSTEM_PROMPT }],
-      },
-      contents,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      },
-    }),
+  const model = client.getGenerativeModel({
+    model: GEMINI_MODEL,
+    systemInstruction: CIVIC_SYSTEM_PROMPT,
+    safetySettings: SAFETY_SETTINGS,
+    generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
   });
 
-  if (!response.ok) {
-    throw new Error(`Gemini API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const chat = model.startChat({ history });
+  const result = await chat.sendMessage(userMessage);
+  return result.response.text();
 }

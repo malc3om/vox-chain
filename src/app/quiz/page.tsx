@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { saveQuizResult } from "@/lib/firebase";
 
 interface Question {
   id: number;
@@ -76,6 +77,20 @@ export default function QuizPage() {
   }
 
   const difficultyColor = { easy: "text-success", medium: "text-accent-warm", hard: "text-accent" };
+
+  // Persist final result to Firebase when quiz completes
+  useEffect(() => {
+    if (finished) {
+      const grade = score >= 8 ? "Excellent!" : score >= 5 ? "Good Job!" : "Keep Learning!";
+      saveQuizResult({
+        score,
+        totalQuestions: 10,
+        accuracy: Math.round((score / 10) * 100),
+        grade,
+        sessionId: crypto.randomUUID(),
+      });
+    }
+  }, [finished, score]);
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-[var(--spacing-page)]">

@@ -59,11 +59,19 @@ export default function RootLayout({
           <div className="ambient-glow top-[-20%] left-[-10%]" />
           <div className="ambient-glow bottom-[-20%] right-[-10%] opacity-50" />
 
+          {/* Skip to main content — keyboard / screen reader accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-black focus:font-medium focus:text-sm"
+          >
+            Skip to main content
+          </a>
+
           {/* Navbar */}
           <Navbar />
 
           {/* Main Content */}
-          <main className="flex-1 relative z-10">{children}</main>
+          <main id="main-content" className="flex-1 relative z-10">{children}</main>
 
           {/* Footer */}
           <footer className="relative z-10 border-t border-border py-12 px-[var(--spacing-page)] bg-bg-surface mt-24">
