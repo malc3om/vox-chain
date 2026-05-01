@@ -64,7 +64,9 @@ export async function POST(request: NextRequest) {
     if (!GEMINI_API_KEY) {
       const fallback = getFallbackResponse(message);
       await logChatSession({ questionsAsked: 1, source: "fallback", sessionId: crypto.randomUUID() });
-      return Response.json({ response: fallback, source: "fallback" });
+      return Response.json({ response: fallback, source: "fallback" }, {
+        headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      });
     }
 
     // Gemini SDK path
@@ -92,6 +94,8 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("[VoxChain] Chat API error:", err);
     const fallback = getFallbackResponse(message);
-    return Response.json({ response: fallback, source: "fallback" });
+    return Response.json({ response: fallback, source: "fallback" }, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },
+    });
   }
 }

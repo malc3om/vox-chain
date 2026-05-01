@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { playAudioBase64 } from "@/lib/google/tts";
 
 interface Message {
   id: string;
   role: "user" | "ai";
   content: string;
+  translatedContent?: string;
   timestamp: Date;
 }
 
@@ -20,9 +23,76 @@ const suggestedQuestions = [
   "Can I vote if I just moved?",
 ];
 
+/** TTS button states */
+type TTSState = "idle" | "loading" | "playing";
+
+function TTSButton({ text }: { text: string }) {
+  const [state, setState] = useState<TTSState>("idle");
+  const stopRef = useRef<(() => void) | null>(null);
+
+  const handleClick = useCallback(async () => {
+    if (state === "playing" && stopRef.current) {
+      stopRef.current();
+      stopRef.current = null;
+      setState("idle");
+      return;
+    }
+
+    setState("loading");
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text.slice(0, 4500) }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.audioContent) {
+        setState("playing");
+        const stop = playAudioBase64(data.audioContent);
+        stopRef.current = stop;
+        // Auto-reset after estimated duration (rough: 150 words/min)
+        const wordCount = text.split(/\s+/).length;
+        const estimatedMs = (wordCount / 150) * 60 * 1000 + 2000;
+        setTimeout(() => setState("idle"), estimatedMs);
+      } else {
+        setState("idle");
+      }
+    } catch {
+      setState("idle");
+    }
+  }, [text, state]);
+
+  const icons: Record<TTSState, string> = {
+    idle: "🔊",
+    loading: "⏳",
+    playing: "⏹",
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="ml-2 text-xs px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-text-muted hover:text-text-primary transition-all"
+      aria-label={
+        state === "playing"
+          ? "Stop reading"
+          : "Read this response aloud"
+      }
+      title={
+        state === "playing"
+          ? "Stop reading"
+          : "Read aloud (Google TTS)"
+      }
+    >
+      {icons[state]}
+    </button>
+  );
+}
+
 function ChatContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
+  const { language, translateText } = useLanguage();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -44,6 +114,27 @@ function ChatContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
+
+  // Translate AI messages when language changes
+  useEffect(() => {
+    if (language === "en") return;
+
+    const translateMessages = async () => {
+      const updated = await Promise.all(
+        messages.map(async (msg) => {
+          if (msg.role === "ai" && !msg.translatedContent) {
+            const translated = await translateText(msg.content);
+            return { ...msg, translatedContent: translated };
+          }
+          return msg;
+        })
+      );
+      setMessages(updated);
+    };
+
+    translateMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   async function handleSend(text?: string) {
     const messageText = text || input.trim();
@@ -75,10 +166,19 @@ function ChatContent() {
       });
 
       const data = await response.json();
+      const responseText = data.response || "I couldn't process that question. Please try again.";
+
+      // Translate if non-English language selected
+      let translatedContent: string | undefined;
+      if (language !== "en") {
+        translatedContent = await translateText(responseText);
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
-        content: data.response || "I couldn't process that question. Please try again.",
+        content: responseText,
+        translatedContent,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
@@ -136,42 +236,57 @@ function ChatContent() {
         {/* Messages */}
         {messages.length > 0 && (
           <div className="flex-1 py-6 space-y-4 overflow-y-auto">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex animate-fade-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {messages.map((msg) => {
+              const displayContent =
+                msg.role === "ai" && language !== "en" && msg.translatedContent
+                  ? msg.translatedContent
+                  : msg.content;
+
+              return (
                 <div
-                  className={`max-w-[80%] px-5 py-3 ${
-                    msg.role === "user"
-                      ? "chat-bubble-user text-white"
-                      : "chat-bubble-ai text-text-primary"
-                  }`}
+                  key={msg.id}
+                  className={`flex animate-fade-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {msg.role === "ai" && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-5 h-5 rounded-md gradient-primary flex items-center justify-center text-[10px]">
-                        V
-                      </div>
-                      <span className="text-xs font-medium text-primary-light">
-                        VoxChain AI
-                      </span>
-                    </div>
-                  )}
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                    {msg.content}
-                  </p>
-                  <p
-                    className={`text-[10px] mt-2 ${msg.role === "user" ? "text-white/50" : "text-text-muted"}`}
+                  <div
+                    className={`max-w-[80%] px-5 py-3 ${
+                      msg.role === "user"
+                        ? "chat-bubble-user text-white"
+                        : "chat-bubble-ai text-text-primary"
+                    }`}
                   >
-                    {msg.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                    {msg.role === "ai" && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-5 h-5 rounded-md gradient-primary flex items-center justify-center text-[10px]">
+                          V
+                        </div>
+                        <span className="text-xs font-medium text-primary-light">
+                          VoxChain AI
+                        </span>
+                        {/* TTS Button */}
+                        <TTSButton text={msg.content} />
+                      </div>
+                    )}
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {displayContent}
+                    </p>
+                    {/* Translation badge */}
+                    {msg.role === "ai" && language !== "en" && msg.translatedContent && (
+                      <p className="text-[10px] text-text-muted mt-1 italic">
+                        Translated from English via Google Translate
+                      </p>
+                    )}
+                    <p
+                      className={`text-[10px] mt-2 ${msg.role === "user" ? "text-white/50" : "text-text-muted"}`}
+                    >
+                      {msg.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Typing Indicator */}
             {isLoading && (

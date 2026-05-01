@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { buildElectionEvent, getCalendarUrl, createCalendarEvent } from "@/lib/google/calendar";
+import { getFirebaseAuth } from "@/lib/firebase";
+import { onAuthStateChanged, type User } from "firebase/auth";
 
 interface ElectionPhase {
   id: number;
@@ -135,6 +138,72 @@ function getStatusLabel(status: string) {
   }
 }
 
+/** Calendar button for each phase */
+function AddToCalendarButton({ phase }: { phase: ElectionPhase }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "added">("idle");
+  const [googleUser, setGoogleUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    try {
+      const auth = getFirebaseAuth();
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setGoogleUser(user);
+      });
+      return () => unsubscribe();
+    } catch {
+      // Firebase not configured
+    }
+  }, []);
+
+  async function handleAddToCalendar() {
+    const event = buildElectionEvent({
+      name: phase.name,
+      dateRange: phase.dateRange,
+      description: phase.description,
+      details: phase.details,
+    });
+
+    // If signed in with Google, use Calendar API
+    if (googleUser) {
+      setStatus("loading");
+      try {
+        const token = await googleUser.getIdToken();
+        const eventId = await createCalendarEvent(token, event);
+        if (eventId) {
+          setStatus("added");
+          return;
+        }
+      } catch {
+        // Fall through to URL method
+      }
+    }
+
+    // Fallback: open Google Calendar URL in new tab
+    const url = getCalendarUrl(event);
+    window.open(url, "_blank", "noopener,noreferrer");
+    setStatus("added");
+  }
+
+  if (status === "added") {
+    return (
+      <span className="text-xs text-success flex items-center gap-1">
+        ✓ Added to Calendar
+      </span>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleAddToCalendar}
+      disabled={status === "loading"}
+      className="text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all disabled:opacity-50"
+      aria-label={`Add ${phase.name} to Google Calendar`}
+    >
+      📅 {status === "loading" ? "Adding..." : "Add to Calendar"}
+    </button>
+  );
+}
+
 export default function TimelinePage() {
   const [selectedPhase, setSelectedPhase] = useState<number | null>(3);
 
@@ -261,15 +330,21 @@ export default function TimelinePage() {
                             </li>
                           ))}
                         </ul>
-                        {phase.onChainTx && (
-                          <div className="mt-4 flex items-center gap-2 text-xs font-mono">
-                            <span className="text-text-muted">On-chain TX:</span>
-                            <span className="text-secondary">
-                              {phase.onChainTx}
-                            </span>
-                            <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                          </div>
-                        )}
+
+                        {/* Calendar + On-chain TX row */}
+                        <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
+                          <AddToCalendarButton phase={phase} />
+
+                          {phase.onChainTx && (
+                            <div className="flex items-center gap-2 text-xs font-mono">
+                              <span className="text-text-muted">On-chain TX:</span>
+                              <span className="text-secondary">
+                                {phase.onChainTx}
+                              </span>
+                              <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </button>

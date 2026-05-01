@@ -60,11 +60,17 @@ VoxChain eliminates this tradeoff using **Zero-Knowledge proofs** from the Midni
 
 ## 🚀 Google Services Used
 
-| Service | Usage | Package |
+| Service | Usage | Package / API |
 |---|---|---|
 | **Gemini 2.0 Flash** | AI civic Q&A with streaming responses | `@google/generative-ai` |
-| **Firebase Firestore** | Persist quiz scores, verification events (anonymized) | `firebase` |
+| **Firebase Firestore** | Persist quiz scores, verification events, translation cache | `firebase` |
+| **Firebase Authentication** | Google Sign-In for Calendar API access | `firebase/auth` |
+| **Firebase Remote Config** | Adaptive quiz difficulty parameters | `firebase/remote-config` |
 | **Firebase Analytics** | Feature usage tracking | `firebase` |
+| **Google Cloud Translation** | Multilingual support (6 languages) on /ask + /quiz | Cloud Translation API v2 |
+| **Google Cloud Text-to-Speech** | Read-aloud accessibility for AI responses | Cloud TTS API v1 |
+| **Google Calendar API** | Add election phase reminders to user calendars | Calendar API v3 |
+| **Google Maps Embed** | Constituency visualization on /eligibility | Maps Embed API |
 | **Google Cloud Run** | Serverless production deployment | `gcloud run deploy` |
 | **Cloud Build** | Container build pipeline (Buildpacks) | Automatic |
 
@@ -91,10 +97,15 @@ Midnight Network uses the **Compact language** — a TypeScript-like DSL that co
 | **Styling** | Tailwind CSS v4 + Custom CSS Variables |
 | **Animations** | GSAP 3 with ScrollTrigger |
 | **AI** | Google Gemini 2.0 Flash (official SDK) |
-| **Database** | Firebase Firestore |
+| **Database** | Firebase Firestore + Remote Config |
+| **Auth** | Firebase Authentication (Google provider) |
+| **i18n** | Google Cloud Translation API v2 |
+| **Accessibility** | Google Cloud Text-to-Speech API |
+| **Calendar** | Google Calendar API v3 |
+| **Maps** | Google Maps Embed API |
 | **Cryptography** | @noble/ed25519 (EdDSA signatures) |
 | **Blockchain** | Midnight Network (Compact contracts) |
-| **Testing** | Vitest (unit) + Playwright (E2E) |
+| **Testing** | Vitest (33 unit) + Playwright (23 E2E) |
 | **Deployment** | Google Cloud Run |
 
 ---
@@ -154,6 +165,15 @@ Create `.env.local`:
 # Required for live AI responses
 GEMINI_API_KEY=your_gemini_api_key
 
+# Optional: Google Cloud Translation API (multilingual support)
+GOOGLE_TRANSLATE_API_KEY=your_translate_api_key
+
+# Optional: Google Cloud Text-to-Speech API (read-aloud)
+GOOGLE_TTS_API_KEY=your_tts_api_key
+
+# Optional: Google Maps Embed API (constituency visualization)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_maps_api_key
+
 # Optional: Firebase persistence (fallbacks gracefully)
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -176,27 +196,36 @@ npm run dev
 ```
 src/
 ├── app/
-│   ├── page.tsx          # Landing page (GSAP animations)
-│   ├── layout.tsx        # Root layout (accessible, skip-to-content)
-│   ├── loading.tsx       # Route-level loading skeleton
-│   ├── error.tsx         # Error boundary
-│   ├── ask/              # AI Civic Chat interface
-│   ├── eligibility/      # ZK Proof eligibility flow
-│   ├── quiz/             # Adaptive civic knowledge quiz
-│   ├── timeline/         # On-chain election timeline
+│   ├── page.tsx              # Landing page (GSAP animations)
+│   ├── layout.tsx            # Root layout (accessible, skip-to-content)
+│   ├── providers.tsx         # Client providers (Wallet + Language)
+│   ├── loading.tsx           # Route-level loading skeleton
+│   ├── error.tsx             # Error boundary
+│   ├── ask/                  # AI Civic Chat + TTS + Translation
+│   ├── eligibility/          # ZK Proof + Google Maps embed
+│   ├── quiz/                 # Adaptive quiz + Translation + Remote Config
+│   ├── timeline/             # Election timeline + Google Calendar
 │   └── api/
-│       ├── chat/         # Gemini streaming endpoint
-│       └── auth/         # Wallet auth (nonce + verify)
+│       ├── chat/             # Gemini streaming endpoint
+│       ├── auth/             # Wallet auth (nonce + verify)
+│       ├── translate/        # Google Cloud Translation proxy
+│       └── tts/              # Google Cloud TTS proxy
 ├── lib/
 │   ├── ai/
-│   │   ├── gemini.ts     # Official @google/generative-ai SDK client
-│   │   └── prompts.ts    # Civic system prompt
-│   ├── firebase.ts       # Firebase Firestore + Analytics
-│   ├── midnight/         # ZK proof logic (Compact stubs)
+│   │   ├── gemini.ts         # Official @google/generative-ai SDK client
+│   │   └── prompts.ts        # Civic system prompt
+│   ├── google/
+│   │   ├── translate.ts      # Cloud Translation API v2 wrapper
+│   │   ├── tts.ts            # Cloud TTS API wrapper
+│   │   └── calendar.ts       # Google Calendar API helper
+│   ├── firebase.ts           # Firestore + Auth + Remote Config
+│   ├── midnight/             # ZK proof logic (Compact stubs)
 │   └── quiz/
-│       └── engine.ts     # Adaptive quiz state machine
+│       └── engine.ts         # Adaptive quiz state machine
+├── contexts/
+│   └── LanguageContext.tsx    # i18n context provider (6 languages)
 └── components/
-    └── layout/Navbar.tsx # Floating glass navbar
+    └── layout/Navbar.tsx     # Navbar + Language Selector + Google Sign-In
 tests/
 ├── auth.spec.ts
 ├── homepage.spec.ts

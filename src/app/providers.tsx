@@ -1,6 +1,7 @@
 "use client";
 
 import { WalletProvider } from "@/components/wallet/WalletProvider";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import type { ReactNode } from "react";
 
 /**
@@ -8,5 +9,9 @@ import type { ReactNode } from "react";
  * Wraps children with all context providers needed by the app.
  */
 export default function Providers({ children }: { children: ReactNode }) {
-  return <WalletProvider>{children}</WalletProvider>;
+  return (
+    <WalletProvider>
+      <LanguageProvider>{children}</LanguageProvider>
+    </WalletProvider>
+  );
 }

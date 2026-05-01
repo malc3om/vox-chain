@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { saveQuizResult } from "@/lib/firebase";
+import { saveQuizResult, getRemoteConfigValue } from "@/lib/firebase";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Question {
   id: number;
@@ -38,12 +39,56 @@ export default function QuizPage() {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
   const [finished, setFinished] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [maxQuestions, setMaxQuestions] = useState(10);
+  const [translatedQuestion, setTranslatedQuestion] = useState<string | null>(null);
+  const [translatedOptions, setTranslatedOptions] = useState<string[] | null>(null);
+
+  const { language, translateText } = useLanguage();
+
+  // Load Remote Config values when quiz starts
+  useEffect(() => {
+    if (started) {
+      getRemoteConfigValue("quiz_max_questions", "10").then((val) => {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed) && parsed > 0) setMaxQuestions(parsed);
+      });
+    }
+  }, [started]);
 
   const getFilteredQuestions = useCallback(() => {
     return questionBank.filter((q) => q.difficulty === difficulty);
   }, [difficulty]);
 
   const currentQuestion = started ? getFilteredQuestions()[currentIndex % getFilteredQuestions().length] : null;
+
+  // Translate current question when language or question changes
+  useEffect(() => {
+    if (!currentQuestion || language === "en") {
+      setTranslatedQuestion(null);
+      setTranslatedOptions(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function translate() {
+      if (!currentQuestion) return;
+
+      const [tQuestion, ...tOptions] = await Promise.all([
+        translateText(currentQuestion.text),
+        ...currentQuestion.options.map((opt) => translateText(opt)),
+      ]);
+
+      if (!cancelled) {
+        setTranslatedQuestion(tQuestion);
+        setTranslatedOptions(tOptions);
+      }
+    }
+
+    translate();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestion?.id, language]);
 
   function handleAnswer(optionIndex: number) {
     if (selected !== null) return;
@@ -64,16 +109,19 @@ export default function QuizPage() {
   }
 
   function handleNext() {
-    if (answered >= 10) { setFinished(true); return; }
+    if (answered >= maxQuestions) { setFinished(true); return; }
     setSelected(null);
     setShowExplanation(false);
     setCurrentIndex((i) => i + 1);
+    setTranslatedQuestion(null);
+    setTranslatedOptions(null);
   }
 
   function handleRestart() {
     setStarted(false); setCurrentIndex(0); setSelected(null);
     setShowExplanation(false); setScore(0); setAnswered(0);
     setDifficulty("easy"); setFinished(false); setStreak(0);
+    setTranslatedQuestion(null); setTranslatedOptions(null);
   }
 
   const difficultyColor = { easy: "text-success", medium: "text-accent-warm", hard: "text-accent" };
@@ -84,13 +132,16 @@ export default function QuizPage() {
       const grade = score >= 8 ? "Excellent!" : score >= 5 ? "Good Job!" : "Keep Learning!";
       saveQuizResult({
         score,
-        totalQuestions: 10,
-        accuracy: Math.round((score / 10) * 100),
+        totalQuestions: maxQuestions,
+        accuracy: Math.round((score / maxQuestions) * 100),
         grade,
         sessionId: crypto.randomUUID(),
       });
     }
-  }, [finished, score]);
+  }, [finished, score, maxQuestions]);
+
+  const displayQuestionText = translatedQuestion ?? currentQuestion?.text ?? "";
+  const displayOptions = translatedOptions ?? currentQuestion?.options ?? [];
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-[var(--spacing-page)]">
@@ -111,7 +162,7 @@ export default function QuizPage() {
           <div className="glass rounded-2xl p-8 text-center animate-slide-up">
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent-warm to-accent flex items-center justify-center text-4xl">🎓</div>
             <h2 className="font-heading text-2xl font-bold mb-3">Ready to Test Your Knowledge?</h2>
-            <p className="text-text-secondary text-sm mb-2">10 questions • Adaptive difficulty • Instant explanations</p>
+            <p className="text-text-secondary text-sm mb-2">{maxQuestions} questions • Adaptive difficulty • Instant explanations</p>
             <p className="text-text-muted text-xs mb-6">Wrong answers trigger AI explanations to help you learn.</p>
             <button onClick={() => setStarted(true)} className="btn-primary text-base" id="start-quiz-btn">Start Quiz →</button>
           </div>
@@ -120,18 +171,21 @@ export default function QuizPage() {
         {started && !finished && currentQuestion && (
           <div className="animate-fade-in">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-text-muted">Question {answered + 1} of 10</span>
+              <span className="text-sm text-text-muted">Question {answered + 1} of {maxQuestions}</span>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-medium ${difficultyColor[difficulty]}`}>{difficulty.toUpperCase()}</span>
                 <span className="text-sm font-mono text-primary">{score}/{answered}</span>
               </div>
             </div>
-            <div className="progress-bar mb-6"><div className="progress-bar-fill" style={{ width: `${(answered / 10) * 100}%` }} /></div>
+            <div className="progress-bar mb-6"><div className="progress-bar-fill" style={{ width: `${(answered / maxQuestions) * 100}%` }} /></div>
 
             <div className="glass rounded-2xl p-6 mb-4">
-              <h2 className="font-heading text-xl font-semibold mb-6">{currentQuestion.text}</h2>
+              <h2 className="font-heading text-xl font-semibold mb-6">{displayQuestionText}</h2>
+              {language !== "en" && translatedQuestion && (
+                <p className="text-[10px] text-text-muted mb-4 italic">Translated via Google Translate</p>
+              )}
               <div className="space-y-3">
-                {currentQuestion.options.map((option, i) => {
+                {displayOptions.map((option, i) => {
                   const isCorrect = i === currentQuestion.correct;
                   const isSelected = i === selected;
                   let borderClass = "border-glass-border hover:border-primary/40";
@@ -170,7 +224,7 @@ export default function QuizPage() {
 
             {selected !== null && (
               <button onClick={handleNext} className="btn-primary w-full" id="quiz-next-btn">
-                {answered >= 10 ? "See Results" : "Next Question →"}
+                {answered >= maxQuestions ? "See Results" : "Next Question →"}
               </button>
             )}
           </div>
@@ -182,7 +236,7 @@ export default function QuizPage() {
             <h2 className="font-heading text-3xl font-bold mb-2">
               {score >= 8 ? "Excellent!" : score >= 5 ? "Good Job!" : "Keep Learning!"}
             </h2>
-            <p className="text-4xl font-heading font-bold gradient-text mb-2">{score}/10</p>
+            <p className="text-4xl font-heading font-bold gradient-text mb-2">{score}/{maxQuestions}</p>
             <p className="text-text-secondary text-sm mb-6">
               {score >= 8 ? "You have a strong understanding of civic processes." : score >= 5 ? "Solid foundation — review the explanations to improve." : "Try the AI chat to learn more about the topics you missed."}
             </p>

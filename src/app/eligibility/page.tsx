@@ -5,6 +5,36 @@ import { logVerificationEvent } from "@/lib/firebase";
 
 type Step = "intro" | "connect" | "input" | "proving" | "result";
 
+const MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+
+/** Google Maps embed for verified constituency */
+function ConstituencyMap({ constituency }: { constituency: string }) {
+  const mapSrc = MAPS_API_KEY
+    ? `https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(constituency)}&zoom=12`
+    : `https://maps.google.com/maps?q=${encodeURIComponent(constituency)}&output=embed`;
+
+  return (
+    <div className="mt-6 animate-fade-in">
+      <div className="glass rounded-xl overflow-hidden border border-success/20">
+        <iframe
+          src={mapSrc}
+          width="100%"
+          height="250"
+          style={{ border: 0 }}
+          allowFullScreen={false}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title={`Map of ${constituency}`}
+          aria-label={`Google Maps showing ${constituency}`}
+        />
+      </div>
+      <p className="text-[11px] text-text-muted text-center mt-2 flex items-center justify-center gap-1">
+        <span>📍</span> Your verified constituency — powered by Google Maps
+      </p>
+    </div>
+  );
+}
+
 export default function EligibilityPage() {
   const [step, setStep] = useState<Step>("intro");
   const [walletConnected, setWalletConnected] = useState(false);
@@ -147,6 +177,9 @@ export default function EligibilityPage() {
                   <div className="flex justify-between"><span className="text-text-muted">Network:</span><span className="text-text-primary">Midnight Mainnet</span></div>
                   <div className="flex justify-between"><span className="text-text-muted">Data exposed:</span><span className="text-accent">None</span></div>
                 </div>
+
+                {/* Google Maps Embed — shows verified constituency */}
+                <ConstituencyMap constituency={formData.constituency} />
               </>
             ) : (
               <>
