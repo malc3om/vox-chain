@@ -1,0 +1,118 @@
+/**
+ * ElectionTimeline.compact
+ * 
+ * Midnight Network Compact smart contract for tracking election phases.
+ * Each phase transition is recorded as an immutable on-chain state change.
+ * 
+ * Ledger state stores the current phase, deadlines, and transition history.
+ * Circuits verify phase transitions follow the correct sequence.
+ */
+
+// ═══════════════════════════════════════
+// ELECTION TIMELINE CONTRACT
+// Stores phases, deadlines, current status
+// ═══════════════════════════════════════
+
+// Phase enum representing election stages
+enum Phase {
+  Registration,
+  Campaigning,
+  EarlyVoting,
+  ElectionDay,
+  VoteCounting,
+  ResultsCertification
+}
+
+// Public ledger state — visible on-chain
+ledger {
+  // Current active phase
+  currentPhase: Phase;
+  
+  // Unix timestamps for each phase deadline
+  registrationDeadline: Uint<64>;
+  campaignEnd: Uint<64>;
+  earlyVotingStart: Uint<64>;
+  earlyVotingEnd: Uint<64>;
+  electionDay: Uint<64>;
+  certificationDeadline: Uint<64>;
+  
+  // Phase transition counter (for audit trail)
+  transitionCount: Uint<32>;
+  
+  // Whether the election has been finalized
+  isFinalized: Boolean;
+  
+  // Admin public key (election authority)
+  adminKey: Bytes<32>;
+}
+
+// Witness: provides the admin's secret key for authorization
+witness adminSecretKey: Bytes<32>;
+
+// ─── Constructor ───────────────────────
+// Initialize the election timeline with all deadlines
+constructor(
+  admin: Bytes<32>,
+  regDeadline: Uint<64>,
+  campEnd: Uint<64>,
+  evStart: Uint<64>,
+  evEnd: Uint<64>,
+  eDay: Uint<64>,
+  certDeadline: Uint<64>
+) {
+  ledger.currentPhase = Phase.Registration;
+  ledger.registrationDeadline = regDeadline;
+  ledger.campaignEnd = campEnd;
+  ledger.earlyVotingStart = evStart;
+  ledger.earlyVotingEnd = evEnd;
+  ledger.electionDay = eDay;
+  ledger.certificationDeadline = certDeadline;
+  ledger.transitionCount = 0;
+  ledger.isFinalized = false;
+  ledger.adminKey = admin;
+}
+
+// ─── Circuits ──────────────────────────
+
+// Advance to the next phase (admin-only)
+// The ZK circuit proves:
+// 1. The caller knows the admin secret key
+// 2. The transition follows the correct sequence
+// 3. The election is not yet finalized
+circuit advancePhase(): [] {
+  // Verify admin authorization
+  const sk = adminSecretKey();
+  assert(derive_public_key(sk) == ledger.adminKey);
+  
+  // Verify not finalized
+  assert(!ledger.isFinalized);
+  
+  // Advance phase in sequence
+  const current = ledger.currentPhase;
+  
+  if (current == Phase.Registration) {
+    ledger.currentPhase = Phase.Campaigning;
+  } else if (current == Phase.Campaigning) {
+    ledger.currentPhase = Phase.EarlyVoting;
+  } else if (current == Phase.EarlyVoting) {
+    ledger.currentPhase = Phase.ElectionDay;
+  } else if (current == Phase.ElectionDay) {
+    ledger.currentPhase = Phase.VoteCounting;
+  } else if (current == Phase.VoteCounting) {
+    ledger.currentPhase = Phase.ResultsCertification;
+    ledger.isFinalized = true;
+  }
+  
+  // Increment transition counter
+  ledger.transitionCount = ledger.transitionCount + 1;
+}
+
+// Query current phase (read-only, no proof needed)
+circuit getCurrentPhase(): Phase {
+  return ledger.currentPhase;
+}
+
+// Query whether election is finalized
+circuit isElectionFinalized(): Boolean {
+  return ledger.isFinalized;
+}

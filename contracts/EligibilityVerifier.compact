@@ -1,0 +1,144 @@
+/**
+ * EligibilityVerifier.compact
+ * 
+ * Midnight Network Compact smart contract for ZK-based voter eligibility.
+ * 
+ * Proves: [age >= 18] AND [resident of constituency] AND [not yet voted]
+ * WITHOUT revealing: identity, exact age, or exact address.
+ * 
+ * The proof is generated locally by the user's device.
+ * Only the verification result is stored on-chain.
+ */
+
+// ═══════════════════════════════════════
+// ELIGIBILITY VERIFIER CONTRACT
+// ZK proof-based eligibility check
+// ═══════════════════════════════════════
+
+// Public ledger state
+ledger {
+  // Set of nullifiers (hashed voter IDs) to prevent double-verification
+  // Each verified voter produces a unique nullifier without revealing identity
+  verifiedNullifiers: Set<Bytes<32>>;
+  
+  // Total number of verified eligible voters
+  verifiedCount: Uint<32>;
+  
+  // Merkle root of valid constituencies
+  // Updated by election authority
+  constituencyMerkleRoot: Bytes<32>;
+  
+  // Minimum voting age
+  minimumAge: Uint<8>;
+  
+  // Whether verification is currently open
+  isOpen: Boolean;
+  
+  // Admin public key
+  adminKey: Bytes<32>;
+}
+
+// ─── Witnesses (Private Inputs) ────────
+// These functions run locally on the user's device
+// The actual values are NEVER sent on-chain
+
+// User's secret key (for nullifier generation)
+witness userSecretKey: Bytes<32>;
+
+// User's age (private, only used in proof)
+witness userAge: Uint<8>;
+
+// User's constituency ID (private)
+witness userConstituency: Bytes<32>;
+
+// Merkle proof of constituency inclusion
+witness constituencyMerkleProof: MerkleTreePath;
+
+// Admin secret key (for admin operations)
+witness adminSecretKey: Bytes<32>;
+
+// ─── Constructor ───────────────────────
+constructor(
+  admin: Bytes<32>,
+  minAge: Uint<8>,
+  merkleRoot: Bytes<32>
+) {
+  ledger.adminKey = admin;
+  ledger.minimumAge = minAge;
+  ledger.constituencyMerkleRoot = merkleRoot;
+  ledger.verifiedCount = 0;
+  ledger.isOpen = true;
+}
+
+// ─── Circuits ──────────────────────────
+
+// Main eligibility verification circuit
+// Proves ALL of:
+// 1. User is at least 18 years old
+// 2. User resides in a valid constituency
+// 3. User has not already been verified (no double-voting)
+// 
+// Reveals NONE of:
+// - User's actual age
+// - User's constituency
+// - User's identity
+circuit verifyEligibility(): [] {
+  // Ensure verification window is open
+  assert(ledger.isOpen);
+  
+  // ── Age Verification ──
+  // Prove age >= minimum without revealing exact age
+  const age = userAge();
+  assert(age >= ledger.minimumAge);
+  
+  // ── Constituency Verification ──
+  // Prove constituency is in the valid set using Merkle proof
+  const constituency = userConstituency();
+  const proof = constituencyMerkleProof();
+  assert(verify_merkle_proof(
+    constituency,
+    proof,
+    ledger.constituencyMerkleRoot
+  ));
+  
+  // ── Double-Verification Prevention ──
+  // Generate nullifier from secret key (deterministic, unlinkable)
+  const sk = userSecretKey();
+  const nullifier = hash(sk, "eligibility_nullifier");
+  
+  // Ensure this nullifier hasn't been used
+  assert(!ledger.verifiedNullifiers.member(nullifier));
+  
+  // ── Record Verification ──
+  // Add nullifier to prevent re-verification
+  ledger.verifiedNullifiers.insert(nullifier);
+  ledger.verifiedCount = ledger.verifiedCount + 1;
+  
+  // Result: eligibility_verified = true
+  // The user is eligible. Their identity remains unknown.
+}
+
+// Admin: update constituency Merkle root
+circuit updateConstituencies(newRoot: Bytes<32>): [] {
+  const sk = adminSecretKey();
+  assert(derive_public_key(sk) == ledger.adminKey);
+  ledger.constituencyMerkleRoot = newRoot;
+}
+
+// Admin: open/close verification window
+circuit setVerificationOpen(open: Boolean): [] {
+  const sk = adminSecretKey();
+  assert(derive_public_key(sk) == ledger.adminKey);
+  ledger.isOpen = open;
+}
+
+// Query: total verified voters
+circuit getVerifiedCount(): Uint<32> {
+  return ledger.verifiedCount;
+}
+
+// Query: check if a nullifier has been used
+// (This doesn't reveal WHO — just whether a proof was submitted)
+circuit isNullifierUsed(nullifier: Bytes<32>): Boolean {
+  return ledger.verifiedNullifiers.member(nullifier);
+}

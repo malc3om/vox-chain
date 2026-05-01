@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VoxChain — AI-Powered Civic Education on Web3
 
-## Getting Started
+> _"Understand your vote. Prove your eligibility. Trust nothing revealed."_
 
-First, run the development server:
+**VoxChain** is a privacy-first civic education assistant built on the **Midnight Network**. It uses zero-knowledge proofs to let users verify their voter eligibility without exposing personal data — no identity, no age, no address leaves your device.
+
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Feature | Route | Description |
+|---------|-------|-------------|
+| **Hero Landing** | `/` | AI search bar, feature cards, ZK proof explainer |
+| **Election Timeline** | `/timeline` | Interactive on-chain election phase tracker |
+| **Ask AI** | `/ask` | AI-powered civic Q&A (Gemini API + fallback) |
+| **ZK Eligibility** | `/eligibility` | Prove voter eligibility via zero-knowledge proofs |
+| **Adaptive Quiz** | `/quiz` | AI-scaled civic knowledge quiz with explanations |
 
-## Learn More
+## 🔐 Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+# Optional — enables Gemini-powered AI responses
+# Without this, the app uses comprehensive built-in civic responses
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗️ Tech Stack
 
-## Deploy on Vercel
+- **Frontend:** Next.js 16 + TypeScript + Tailwind CSS
+- **Fonts:** Space Grotesk (headings) · Inter (body) · JetBrains Mono (code)
+- **AI Engine:** Gemini 2.5 Flash (with fallback civic knowledge base)
+- **Blockchain:** Midnight Network (Compact smart contracts)
+- **Wallet:** Lace Wallet via DApp Connector API
+- **Proofs:** Zero-knowledge proofs for eligibility verification
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── api/chat/route.ts     # AI chat API endpoint
+│   ├── ask/page.tsx           # Chat interface
+│   ├── eligibility/page.tsx   # ZK proof flow
+│   ├── quiz/page.tsx          # Adaptive quiz
+│   └── timeline/page.tsx      # Election tracker
+├── components/
+│   └── layout/Navbar.tsx      # Navigation
+├── lib/
+│   ├── ai/                    # Gemini client + system prompts
+│   ├── midnight/              # Wallet, contracts, ZK proofs
+│   └── quiz/                  # Adaptive difficulty engine
+├── types/                     # TypeScript definitions
+contracts/
+├── ElectionTimeline.compact   # Phase tracking contract
+└── EligibilityVerifier.compact # ZK eligibility contract
+```
+
+## 🎨 Design System
+
+- **Dark mode only** — deep space palette (#0A0A1A)
+- **Glassmorphism** — blur + translucent surfaces
+- **Glow effects** — Electric Violet (#6C5CE7) + Cyan (#00D2FF)
+- **Gradient borders** — Primary → Secondary diagonal
+
+## 🔗 Built For
+
+**PromptWars: Virtual 2026** — Midnight Network Track
+
+Built with the Midnight Network Compact language for privacy-preserving civic education.
+
+## 📜 License
+
+MIT
