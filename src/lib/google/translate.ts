@@ -13,6 +13,7 @@ import {
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { askGemini, isGeminiConfigured } from "@/lib/ai/gemini";
 
 const TRANSLATE_API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY ?? "";
 const TRANSLATE_ENDPOINT =
@@ -122,8 +123,19 @@ export async function translateText(
     return { translatedText: cached, cached: true };
   }
 
-  // No API key — return original
+  // No API key — fallback to Gemini or return original
   if (!isTranslateConfigured()) {
+    if (isGeminiConfigured()) {
+      try {
+        const prompt = `Translate the following text to language code "${targetLang}". Return ONLY the raw translated text, no markdown, no quotes, no conversational filler:\n\n${text}`;
+        const translated = await askGemini(prompt);
+        // Cache the result (non-blocking)
+        cacheTranslation(text, targetLang, translated);
+        return { translatedText: translated, cached: false };
+      } catch (err) {
+        console.warn("[VoxChain] Gemini translation fallback failed:", err);
+      }
+    }
     return { translatedText: text, cached: false };
   }
 

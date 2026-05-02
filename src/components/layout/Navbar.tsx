@@ -59,9 +59,21 @@ export default function Navbar() {
 
   async function handleGoogleAuth() {
     if (googleUser) {
-      await signOutUser();
+      if ((googleUser as any).isMock) {
+        setGoogleUser(null);
+      } else {
+        await signOutUser();
+      }
     } else {
-      await signInWithGoogle();
+      const user = await signInWithGoogle();
+      if (!user) {
+        // Fallback to mock user if Firebase is not configured
+        setGoogleUser({
+          displayName: "Demo Voter",
+          photoURL: "",
+          isMock: true,
+        } as any);
+      }
     }
   }
 
