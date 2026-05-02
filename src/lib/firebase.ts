@@ -146,7 +146,7 @@ export async function logChatSession(
 
 const googleProvider = new GoogleAuthProvider();
 // Request Calendar API scope for adding election reminders
-googleProvider.addScope("https://www.googleapis.com/auth/calendar.events");
+// googleProvider.addScope("https://www.googleapis.com/auth/calendar.events");
 
 /** Get the Firebase Auth instance. */
 export function getFirebaseAuth(): Auth {
