@@ -1,7 +1,12 @@
 # Integrations
 
 1. **Gemini API**: Used for AI civic assistant chat functionality (via `@google/genai` or direct API calls).
-2. **Midnight Network**: 
+2. **Firebase**: 
+   - **Authentication**: Google Sign-In used for user identification and Calendar API access.
+   - **Firestore**: Used for persisting quiz results, verification events, and chat session analytics.
+   - **Remote Config**: Used for adaptive quiz parameters (e.g., `quiz_max_questions`).
+3. **Midnight Network**: 
    - SIWE (Sign-In With Midnight) style wallet authentication.
    - Zero-Knowledge proofs via Midnight Compact smart contracts (age verification, residency proofs).
    - Expected use of `@midnight-ntwrk/dapp-connector-api`.
+

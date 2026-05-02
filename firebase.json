@@ -1,1 +1,15 @@
-{}
+{
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "VoxChain",
+        "supportEmail": "sanskarrawat54@gmail.com",
+        "authorizedRedirectUris": [
+          "https://voxchain-224920294393.us-central1.run.app",
+          "https://aurumconnect.firebaseapp.com",
+          "http://localhost:3000"
+        ]
+      }
+    }
+  }
+}

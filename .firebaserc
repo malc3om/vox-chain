@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "aurumconnect"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
