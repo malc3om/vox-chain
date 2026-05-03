@@ -1,7 +1,7 @@
 # Concerns: VoxChain
 
 ## Technical Debt
-- **Firebase Auth Domains**: `localhost` and the production URL must be manually whitelisted in the Firebase console.
+- **Firebase Auth Domains**: ✓ Resolved. Whitelisted in Firebase and Google Cloud consoles.
 - **Midnight Proof Server**: Dependency on a local Docker container (`port 6300`) can be a bottleneck for automated testing.
 - **Mock User Fallback**: The code still contains a demo user fallback that could mask real auth issues if not monitored.
 
