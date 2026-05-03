@@ -1,4 +1,11 @@
-# <p align="center"><img src="public/logo.png" width="160" alt="VoxChain Logo" /><br>VOXCHAIN</p>
+# <p align="center"><br><br><code><pre>
+██╗   ██╗ ██████╗ ██╗  ██╗ ██████╗██╗  ██╗ █████╗ ██╗███╗   ██╗
+██║   ██║██╔═══██╗╚██╗██╔╝██╔════╝██║  ██║██╔══██╗██║████╗  ██║
+██║   ██║██║   ██║ ╚███╔╝ ██║     ███████║███████║██║██╔██╗ ██║
+╚██╗ ██╔╝██║   ██║ ██╔██╗ ██║     ██╔══██║██╔══██║██║██║╚██╗██║
+ ╚████╔╝ ╚██████╔╝██╔╝ ██╗╚██████╗██║  ██║██║  ██║██║██║ ╚████║
+  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+</pre></code><br>VOXCHAIN</p>
 
 <p align="center">
   <strong>Institutional Web3 Civic Intelligence Platform</strong><br>
@@ -7,13 +14,13 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/CI-passing-2ea44f?style=for-the-badge&logo=github-actions" alt="CI Passing" />
-  <img src="https://img.shields.io/badge/Midnight-Preprod-7c3aed?style=for-the-badge" alt="Midnight Network" />
+  <img src="https://img.shields.io/badge/Midnight-Network-7c3aed?style=for-the-badge" alt="Midnight Network" />
   <img src="https://img.shields.io/badge/Gemini-2.0%20Flash-4285F4?style=for-the-badge&logo=google-gemini" alt="Gemini AI" />
   <img src="https://img.shields.io/badge/Tests-39%2F40%20passing-yellowgreen?style=for-the-badge" alt="Tests" />
 </p>
 
 <p align="center">
-  <em>Built for the <strong>Google Antigravity Hackathon 2026</strong> — Civic Intelligence Vertical</em>
+  <em>Built for the <strong>Google Antigravity Hackathon 2026</strong> by Team Unfazed</em>
 </p>
 
 ---
