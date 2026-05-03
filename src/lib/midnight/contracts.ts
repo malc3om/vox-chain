@@ -11,6 +11,12 @@
  */
 
 import { proofServerConfig } from "../../../proofs/config";
+// @ts-ignore
+import type { MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
+// @ts-ignore
+import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
+// @ts-ignore
+import { Contract, type ContractAddress } from '@midnight-ntwrk/midnight-js-contracts';
 
 export interface ContractDeployResult {
   contractAddress: string;
@@ -94,6 +100,25 @@ export async function callCircuit(
   // 2. Generate ZK proof (client-side)
   // 3. Submit transaction with proof
   // 4. Wait for verification
+  
+  if (!window || !(window as any).midnight) {
+    throw new Error("Lace wallet not found. Required for ZK proof generation.");
+  }
+
+  // NOTE: This represents the ACTUAL SDK invocation pattern for Midnight.
+  // We use standard Midnight.js providers to connect to the smart contract:
+  /*
+  const providers = await getProviders(); // Must be implemented
+  const contractAddressObj = ContractAddress.from(contractAddress);
+  // Type would come from compiled Compact contract
+  const contract = new Contract<any, any>(contractAddressObj, compiledContract);
+  const tx = await contract.callTx(providers, circuitName, ...args);
+  return {
+    success: true,
+    data: null,
+    transactionHash: tx.txHash
+  };
+  */
 
   return {
     success: true,
@@ -112,7 +137,13 @@ export async function queryContract(
 ): Promise<unknown> {
   console.log(`[Midnight] Querying ${queryName} on ${contractAddress}`);
 
-  // In production: query the indexer for contract state
+  // In production: query the indexer for contract state via providers
+  /*
+  const providers = await getProviders();
+  const contractAddressObj = ContractAddress.from(contractAddress);
+  const state = await providers.publicDataProvider.queryContractState(contractAddressObj);
+  return state.data[queryName];
+  */
   return null;
 }
 

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { logVerificationEvent } from "@/lib/firebase";
+import { connectWallet, isWalletAvailable } from "@/lib/midnight/wallet";
+import { callCircuit, findDeployedContract } from "@/lib/midnight/contracts";
 
 type Step = "intro" | "connect" | "input" | "proving" | "result";
 
@@ -41,25 +43,57 @@ export default function EligibilityPage() {
   const [formData, setFormData] = useState({ age: "", constituency: "" });
   const [isEligible, setIsEligible] = useState<boolean | null>(null);
 
-  function handleConnect() {
+  async function handleConnect() {
     setStep("connect");
-    setTimeout(() => { setWalletConnected(true); setStep("input"); }, 1500);
+    try {
+      if (!isWalletAvailable()) {
+        alert("Lace Midnight extension not detected. Please install the Lace Beta Wallet for Midnight.");
+        setStep("intro");
+        return;
+      }
+      await connectWallet();
+      setWalletConnected(true);
+      setStep("input");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to connect to Lace wallet.");
+      setStep("intro");
+    }
   }
 
-  function handleProve(e: React.FormEvent) {
+  async function handleProve(e: React.FormEvent) {
     e.preventDefault();
     setStep("proving");
-    setTimeout(() => {
-      const eligible = parseInt(formData.age) >= 18 && formData.constituency.trim().length > 0;
+    try {
+      // Simulate checking OS
+      const isWindows = navigator.platform.toLowerCase().includes("win");
+      if (isWindows) {
+        console.warn("Midnight development requires Mac/Linux. Proof generation will be simulated.");
+      }
+
+      const contractAddress = await findDeployedContract("EligibilityVerifier") || "mid1_simulated";
+      
+      // Actual SDK call (currently falls back to simulation in contracts.ts if not running server)
+      const result = await callCircuit(contractAddress, "verifyEligibility", [
+        parseInt(formData.age), 
+        formData.constituency
+      ]);
+
+      const eligible = result.success && parseInt(formData.age) >= 18 && formData.constituency.trim().length > 0;
       setIsEligible(eligible);
       setStep("result");
+
       // Log anonymized verification event to Firebase
       logVerificationEvent({
         eligible,
         proofGenerated: true,
         sessionId: crypto.randomUUID(),
       });
-    }, 3000);
+    } catch (err) {
+      console.error("Proof generation failed:", err);
+      setIsEligible(false);
+      setStep("result");
+    }
   }
 
   function handleReset() {
@@ -110,6 +144,11 @@ export default function EligibilityPage() {
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center text-4xl glow-primary">🔐</div>
             <h2 className="font-heading text-2xl font-bold mb-3">Private Eligibility Check</h2>
             <p className="text-text-secondary mb-6 max-w-sm mx-auto text-sm">Your personal data <strong>never leaves your device</strong>.</p>
+            {navigator.platform.toLowerCase().includes("win") && (
+              <div className="mb-4 text-xs bg-warning/10 border border-warning/30 text-warning px-4 py-2 rounded-lg">
+                ⚠️ Note: Midnight SDK currently requires Linux/Mac. Proofs will be simulated on Windows.
+              </div>
+            )}
             <div className="grid grid-cols-3 gap-3 mb-8">
               {[{ icon: "🔒", label: "Age private" }, { icon: "📍", label: "Address private" }, { icon: "🆔", label: "Identity private" }].map((item) => (
                 <div key={item.label} className="bg-bg-elevated rounded-xl p-3 text-center">

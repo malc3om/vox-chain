@@ -5,10 +5,14 @@
  * Provides wallet state, balance, and transaction capabilities.
  */
 
+// @ts-ignore
+import type { DAppConnectorAPI } from '@midnight-ntwrk/midnight-js-dapp-connector';
+
 export interface WalletState {
   connected: boolean;
   address: string | null;
   balance: string | null;
+  api: DAppConnectorAPI | null;
 }
 
 /**
@@ -48,6 +52,7 @@ export async function connectWallet(): Promise<WalletState> {
       connected: true,
       address: state.address || null,
       balance: state.balance || null,
+      api: walletAPI as DAppConnectorAPI,
     };
   } catch (error) {
     console.error("Wallet connection failed:", error);
