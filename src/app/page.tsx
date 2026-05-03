@@ -224,12 +224,69 @@ export default function Home() {
       </section>
 
       {/* ── Features Grid ────────────────── */}
-      <section className="features-section w-full relative z-10">
+      <section className="features-section w-full relative z-10 bg-bg-elevated/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-[var(--spacing-page)] py-24 border-t border-white/5">
+          <div className="mb-16 text-center max-w-4xl mx-auto">
+            <h2 className="font-heading text-3xl md:text-5xl font-medium mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
+              A Complete Civic Toolkit
+            </h2>
+            <p className="text-text-secondary text-lg leading-relaxed">
+              VoxChain isn't just another voting app. It's a comprehensive civic education platform built with privacy-first principles. Explore AI-powered insights, track immutable timelines, and prove your voting eligibility.
+            </p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((feature) => (
               <FeatureCard key={feature.href} feature={feature} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Technology Deep Dive ────────── */}
+      <section className="technology-section w-full relative z-10 py-24 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-[var(--spacing-page)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8 animate-slide-up">
+              <h2 className="font-heading text-4xl font-medium tracking-tight">
+                Built on Cutting-Edge Technology
+              </h2>
+              <div className="space-y-6">
+                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-primary/50 transition-colors">
+                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
+                    <Shield className="text-primary w-6 h-6" /> Midnight Network & ZK
+                  </h3>
+                  <p className="text-text-secondary leading-relaxed">
+                    We use the Midnight Network's Compact smart contracts to implement true Zero-Knowledge (ZK) proofs. Your private data (witnesses) is computed locally, and only the cryptographic proof goes on-chain, ensuring absolute privacy.
+                  </p>
+                </div>
+                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-accent/50 transition-colors">
+                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
+                    <HelpCircle className="text-accent w-6 h-6" /> Google Gemini AI
+                  </h3>
+                  <p className="text-text-secondary leading-relaxed">
+                    Our civic assistant uses Google's Gemini SDK to provide unbiased, easily digestible answers to complex election questions, empowering you to make informed decisions.
+                  </p>
+                </div>
+                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-purple-500/50 transition-colors">
+                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
+                    <Activity className="text-purple-500 w-6 h-6" /> Modern Web Stack
+                  </h3>
+                  <p className="text-text-secondary leading-relaxed">
+                    Powered by Next.js App Router, React 19, and Tailwind CSS. Deployed on Google Cloud Run for limitless scalability. Enhanced with GSAP ScrollTrigger for buttery smooth, scroll-driven animations.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="relative h-[600px] w-full rounded-3xl border border-white/10 bg-gradient-to-br from-bg-surface to-bg-elevated overflow-hidden shadow-2xl flex items-center justify-center">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+              <div className="relative z-10 text-center space-y-4">
+                <div className="w-24 h-24 mx-auto rounded-full bg-primary/20 border border-primary flex items-center justify-center glow-primary">
+                  <Cpu className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold font-heading">Dual-State Architecture</h3>
+                <p className="text-sm text-text-muted max-w-xs mx-auto">Public Ledger + Private Local State = Absolute Voter Privacy.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
