@@ -33,7 +33,6 @@ export default function GSAPAnimations({
           scrub: 1,
         },
         y: (i) => (i + 1) * -50,
-        opacity: 0,
         ease: "none",
       });
 
