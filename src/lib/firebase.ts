@@ -1,15 +1,5 @@
-/**
- * Firebase Integration for VoxChain
- *
- * Provides Firestore persistence for:
- * - Quiz scores and session history
- * - Anonymized eligibility verification events
- * - Analytics tracking for civic engagement metrics
- * - Firebase Auth (Google Sign-In) for Calendar API access
- * - Firebase Remote Config for adaptive quiz parameters
- */
-
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+
 import {
   getFirestore,
   collection,
@@ -20,11 +10,14 @@ import {
 import {
   getAuth,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   GoogleAuthProvider,
   type Auth,
   type UserCredential,
 } from "firebase/auth";
+
 import {
   getRemoteConfig,
   fetchAndActivate,
@@ -57,7 +50,7 @@ export function isFirebaseConfigured(): boolean {
   return firebaseConfig.apiKey.length > 0;
 }
 
-// ── Data models ─────────────────────────────────────────────
+
 
 export interface QuizResult {
   score: number;
@@ -83,7 +76,7 @@ export interface ChatSession {
   timestamp: ReturnType<typeof serverTimestamp>;
 }
 
-// ── Write helpers ─────────────────────────────────────────────
+
 
 /**
  * Persist a completed quiz result to Firestore.
@@ -142,11 +135,9 @@ export async function logChatSession(
   }
 }
 
-// ── Firebase Authentication (Google Sign-In) ────────────
+
 
 const googleProvider = new GoogleAuthProvider();
-// Request Calendar API scope for adding election reminders
-// googleProvider.addScope("https://www.googleapis.com/auth/calendar.events");
 
 /** Get the Firebase Auth instance. */
 export function getFirebaseAuth(): Auth {
@@ -160,13 +151,31 @@ export function getFirebaseAuth(): Auth {
 export async function signInWithGoogle(): Promise<UserCredential | null> {
   if (!isFirebaseConfigured()) return null;
   const auth = getFirebaseAuth();
-  const result = await signInWithPopup(auth, googleProvider);
-  return result;
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result;
+  } catch (popupError: any) {
+    if (
+      popupError.code === "auth/popup-blocked" ||
+      popupError.code === "auth/cancelled-popup-request"
+    ) {
+      await signInWithRedirect(auth, googleProvider);
+      return null;
+    }
+    throw popupError;
+  }
 }
 
-/**
- * Sign out the currently authenticated user.
- */
+export async function handleRedirectResult(): Promise<UserCredential | null> {
+  if (!isFirebaseConfigured()) return null;
+  try {
+    const auth = getFirebaseAuth();
+    return await getRedirectResult(auth);
+  } catch {
+    return null;
+  }
+}
+
 export async function signOutUser(): Promise<void> {
   try {
     const auth = getFirebaseAuth();
@@ -193,7 +202,7 @@ export async function getGoogleAccessToken(): Promise<string | null> {
   }
 }
 
-// ── Firebase Remote Config ──────────────────────────────
+
 
 let remoteConfigInstance: RemoteConfig | null = null;
 let remoteConfigInitialized = false;

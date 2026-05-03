@@ -1,0 +1,27 @@
+pragma language compact;
+
+import "@midnight-ntwrk/compact-runtime";
+
+/**
+ * Voter Eligibility Contract
+ * Proves: 
+ * 1. Age >= 18
+ * 2. Uniqueness (using a nullifier based on a private key and election ID)
+ */
+export circuit voter_eligibility(
+  witness user_age: Uint32,
+  witness private_key: Bytes<32>,
+  public election_id: Bytes<32>,
+  public nullifier_set: Set<Bytes<32>>
+): Bytes<32> {
+  // 1. Verify Age
+  assert user_age >= 18;
+
+  // 2. Generate Nullifier
+  const nullifier = hash(private_key, election_id);
+
+  // 3. Verify Uniqueness (Nullifier must NOT be in the set)
+  assert !nullifier_set.contains(nullifier);
+
+  return nullifier;
+}

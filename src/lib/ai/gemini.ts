@@ -1,13 +1,25 @@
-/**
- * Gemini AI Client for VoxChain
- *
- * Uses the official @google/generative-ai SDK for type-safe,
- * streaming AI responses. Falls back to a curated civic knowledge
- * base when no API key is configured.
- */
-
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+
 import { CIVIC_SYSTEM_PROMPT } from "./prompts";
+import civicData from "../civic_data.json";
+
+/** Load grounded civic knowledge from JSON */
+function getGroundedKnowledge(): string {
+  try {
+    return JSON.stringify(civicData);
+  } catch (error) {
+    console.warn("[VoxChain] Could not load civic_data.json for grounding:", error);
+    return "Official election data is currently being updated.";
+  }
+}
+
+/** Get the final system instruction with grounded data injected */
+function getSystemInstruction(): string {
+  const groundedData = getGroundedKnowledge();
+  return CIVIC_SYSTEM_PROMPT.replace("{{GROUNDED_DATA}}", groundedData);
+}
+
+
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 const GEMINI_MODEL = "gemini-2.0-flash";
@@ -52,10 +64,11 @@ export async function streamGeminiResponse(
 
   const model = client.getGenerativeModel({
     model: GEMINI_MODEL,
-    systemInstruction: CIVIC_SYSTEM_PROMPT,
+    systemInstruction: getSystemInstruction(),
     safetySettings: SAFETY_SETTINGS,
     generationConfig: { temperature: 0.7, maxOutputTokens: 1024, topP: 0.9 },
   });
+
 
   const chat = model.startChat({ history });
   const result = await chat.sendMessageStream(userMessage);
@@ -82,10 +95,11 @@ export async function askGemini(
 
   const model = client.getGenerativeModel({
     model: GEMINI_MODEL,
-    systemInstruction: CIVIC_SYSTEM_PROMPT,
+    systemInstruction: getSystemInstruction(),
     safetySettings: SAFETY_SETTINGS,
     generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
   });
+
 
   const chat = model.startChat({ history });
   const result = await chat.sendMessage(userMessage);

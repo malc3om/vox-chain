@@ -1,9 +1,3 @@
-/**
- * ZK Proof Helpers
- * 
- * Client-side utilities for generating and verifying zero-knowledge proofs.
- * All proof computation happens locally — private data never leaves the device.
- */
 
 export interface ProofInput {
   age: number;
@@ -96,7 +90,7 @@ export async function checkNullifier(
   return { used: false };
 }
 
-// ── Private helpers ──────────────────
+
 
 function hashString(input: string): string {
   let hash = 0;

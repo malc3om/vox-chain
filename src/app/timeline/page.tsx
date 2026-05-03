@@ -17,9 +17,10 @@ const electionPhases: ElectionPhase[] = [
     details: [
       "Online registration opens via state portals",
       "Mail-in registration forms accepted",
-      "Deadline stored as Compact contract state",
+      "Deadline stored as smart contract state",
       "Registration status verifiable via ZK proof",
     ],
+
     icon: "📝",
     onChainTx: "0x7a3f...e91b",
   },
@@ -29,13 +30,14 @@ const electionPhases: ElectionPhase[] = [
     status: "completed",
     dateRange: "Mar 2 — Oct 15, 2026",
     description:
-      "Candidates campaign. Spending records are anchored on Midnight for transparency.",
+      "Candidates campaign. Spending records are anchored on the secure network for transparency.",
     details: [
       "Candidate declarations filed on-chain",
       "Campaign finance reports anchored weekly",
       "Debate schedules published as contract events",
       "Public endorsements tracked transparently",
     ],
+
     icon: "📢",
     onChainTx: "0x4b2e...c83d",
   },
@@ -64,10 +66,11 @@ const electionPhases: ElectionPhase[] = [
       "Polls open nationwide. Final votes cast and verified in real-time.",
     details: [
       "Polls open 7:00 AM — 8:00 PM local time",
-      "Real-time vote verification on Midnight",
+      "Real-time vote verification on the secure network",
       "Exit poll data anchored for auditability",
       "Emergency procedures documented on-chain",
     ],
+
     icon: "🏛️",
   },
   {
@@ -91,13 +94,14 @@ const electionPhases: ElectionPhase[] = [
     status: "upcoming",
     dateRange: "Nov 11 — Dec 1, 2026",
     description:
-      "Final results certified. Immutable record stored on Midnight forever.",
+      "Final results certified. Immutable record stored on the secure network forever.",
     details: [
       "State-by-state certification process",
-      "Final tallies anchored on Midnight ledger",
+      "Final tallies anchored on the secure network ledger",
       "Contestation window documented on-chain",
       "Certified results become permanent record",
     ],
+
     icon: "✅",
   },
 ];
@@ -214,9 +218,10 @@ export default function TimelinePage() {
             Election <span className="gradient-text">Timeline</span>
           </h1>
           <p className="mt-3 text-text-secondary max-w-xl mx-auto">
-            Each phase is stored as an immutable Compact smart contract state on
-            Midnight. Click a phase to see details.
+            Each phase is stored as an immutable smart contract state on
+            the secure network. Click a phase to see details.
           </p>
+
         </div>
 
         {/* Progress Bar */}
@@ -361,8 +366,9 @@ export default function TimelinePage() {
             </div>
             <div>
               <span className="text-text-muted">Network:</span>
-              <p className="text-text-primary mt-1">Midnight Mainnet</p>
+              <p className="text-text-primary mt-1">Secure Mainnet</p>
             </div>
+
             <div>
               <span className="text-text-muted">Last Updated:</span>
               <p className="text-text-primary mt-1">

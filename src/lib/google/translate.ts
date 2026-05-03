@@ -1,11 +1,5 @@
-/**
- * Google Cloud Translation API v2 Wrapper
- *
- * Provides translation capabilities with Firestore caching.
- * Silently degrades to returning original text when API key is missing.
- */
-
 import { getDb, isFirebaseConfigured } from "@/lib/firebase";
+
 import {
   collection,
   doc,
@@ -14,6 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { askGemini, isGeminiConfigured } from "@/lib/ai/gemini";
+import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/lib/constants";
 
 const TRANSLATE_API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY ?? "";
 const TRANSLATE_ENDPOINT =
@@ -25,16 +20,7 @@ export interface TranslationResult {
   cached: boolean;
 }
 
-export const SUPPORTED_LANGUAGES = [
-  { code: "en", label: "English", native: "English" },
-  { code: "hi", label: "Hindi", native: "हिन्दी" },
-  { code: "es", label: "Spanish", native: "Español" },
-  { code: "fr", label: "French", native: "Français" },
-  { code: "ar", label: "Arabic", native: "العربية" },
-  { code: "pt", label: "Portuguese", native: "Português" },
-] as const;
 
-export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
 
 /** Returns true when a Translation API key is configured. */
 export function isTranslateConfigured(): boolean {

@@ -1,8 +1,5 @@
-/**
- * Election Data Types
- */
-
 export type PhaseStatus = "completed" | "active" | "upcoming";
+
 
 export interface ElectionPhase {
   id: number;

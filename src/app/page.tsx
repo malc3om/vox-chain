@@ -7,11 +7,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ArrowRight, Shield, Cpu, HelpCircle, Activity, type LucideIcon } from "lucide-react";
 
-// ── Dynamic GSAP import ──
 const GSAPAnimations = dynamic(
   () => import("@/components/home/GSAPAnimations"),
   { ssr: false }
 );
+
 
 interface FeatureItem {
   icon: LucideIcon;
@@ -51,18 +51,18 @@ const TIMELINE_PHASES = [
   {
     title: "Registration",
     desc: "Voter roll verification via ZK-Eligibility.",
-    detailedDesc: "The protocol uses Zero-Knowledge proofs to verify your identity against the official voter database without ever exposing your private data on-chain. This ensures only eligible citizens can participate while maintaining absolute anonymity.",
+    detailedDesc: "The protocol uses Zero-Knowledge proofs to verify your identity against the official voter database without ever exposing your private data. This ensures only eligible citizens can participate while maintaining absolute anonymity.",
     color: "var(--color-accent)",
   },
   {
     title: "Primaries",
     desc: "Selecting party representatives privately.",
-    detailedDesc: "In this phase, individual party members cast their ballots using private state transactions. The Midnight Network aggregates these results to select candidates while keeping individual preferences completely hidden from public view.",
+    detailedDesc: "In this phase, individual party members cast their ballots using private state transactions. The network aggregates these results to select candidates while keeping individual preferences completely hidden from public view.",
     color: "#a1a1aa",
   },
   {
     title: "General Election",
-    desc: "The final ballot on the Midnight Network.",
+    desc: "The final ballot on the secure network.",
     detailedDesc: "The main event where all verified voters cast their final choice. Every vote is an immutable ZK-proof, ensuring the result is mathematically verifiable by anyone while keeping the specific choice of each voter private.",
     color: "var(--color-accent)",
   },
@@ -73,6 +73,7 @@ const TIMELINE_PHASES = [
     color: "#a1a1aa",
   },
 ] as const;
+
 
 // ── Memoized sub-components ──
 
@@ -186,8 +187,14 @@ export default function Home() {
         </div>
 
         <h1 className="hero-elem font-heading text-6xl md:text-8xl font-bold text-center leading-[1.05] max-w-5xl tracking-tighter z-10 relative">
-          The Future of <span className="text-accent">Civic Trust.</span>
+          The Future of <span className="scribble-text">
+            Civic Trust.
+            <svg viewBox="0 0 300 20" preserveAspectRatio="none">
+              <path d="M5,15 Q150,5 295,15 T295,15" />
+            </svg>
+          </span>
         </h1>
+
 
         <p className="hero-elem mt-8 text-lg text-text-secondary max-w-xl text-center font-medium leading-relaxed z-10 relative">
           A minimalist, Zero-Knowledge educational platform reimagined in 3D. Understand the timeline, trust the process.
@@ -294,7 +301,8 @@ export default function Home() {
       {/* ── Animated Ribbon ────────────────── */}
       <div className="ribbon-container relative w-full overflow-hidden bg-accent text-bg-matte py-6 z-20 -rotate-1 border-y border-white/10 shadow-2xl">
         <div ref={ribbonRef} className="ribbon-content whitespace-nowrap flex font-heading text-2xl font-black uppercase tracking-tighter items-center">
-          {[...Array(10)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
+
             <span key={i} className="mx-12 flex items-center gap-6">
               <Shield className="w-6 h-6" />
               Privacy First
@@ -308,8 +316,9 @@ export default function Home() {
       </div>
 
       <footer className="w-full py-20 px-8 text-center text-text-muted text-xs font-bold uppercase tracking-widest border-t border-white/5">
-        &copy; 2026 VoxChain Protocol • Built on Midnight Network
+        &copy; 2026 VoxChain Protocol • Secure Civic Network
       </footer>
+
     </div>
   );
 }

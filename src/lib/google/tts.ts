@@ -1,11 +1,5 @@
-/**
- * Google Cloud Text-to-Speech API Wrapper
- *
- * Converts text to speech using Neural2 voices.
- * Silently degrades when API key is missing.
- */
-
 const TTS_API_KEY = process.env.GOOGLE_TTS_API_KEY ?? "";
+
 const TTS_ENDPOINT = "https://texttospeech.googleapis.com/v1/text:synthesize";
 
 export interface TTSRequest {

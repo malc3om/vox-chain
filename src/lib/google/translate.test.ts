@@ -32,7 +32,8 @@ describe("translate", () => {
   });
 
   it("exports SUPPORTED_LANGUAGES with correct structure", async () => {
-    const { SUPPORTED_LANGUAGES } = await import("@/lib/google/translate");
+    const { SUPPORTED_LANGUAGES } = await import("@/lib/constants");
+
     expect(SUPPORTED_LANGUAGES.length).toBeGreaterThanOrEqual(6);
     expect(SUPPORTED_LANGUAGES[0]).toHaveProperty("code");
     expect(SUPPORTED_LANGUAGES[0]).toHaveProperty("label");

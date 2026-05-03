@@ -6,11 +6,11 @@ import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useWallet } from "@/components/wallet/WalletProvider";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/lib/google/translate";
-import { signInWithGoogle, signOutUser, getFirebaseAuth } from "@/lib/firebase";
+import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/lib/constants";
+import { signInWithGoogle, signOutUser, getFirebaseAuth, handleRedirectResult } from "@/lib/firebase";
+
 import { onAuthStateChanged, type User } from "firebase/auth";
 
-// Lazy-load WalletModal — only needed on click interaction
 const WalletModal = dynamic(
   () => import("@/components/wallet/WalletModal"),
   { ssr: false }
@@ -44,16 +44,16 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Listen for Firebase Auth state changes
   useEffect(() => {
     try {
       const auth = getFirebaseAuth();
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setGoogleUser(user);
       });
+      handleRedirectResult();
       return () => unsubscribe();
     } catch {
-      // Firebase not configured — no-op
+      // Firebase not configured
     }
   }, []);
 
@@ -61,35 +61,26 @@ export default function Navbar() {
 
   async function handleGoogleAuth() {
     if (googleUser) {
-      if ((googleUser as any).isMock) {
-        setGoogleUser(null);
-      } else {
-        await signOutUser();
-      }
+      await signOutUser();
     } else {
       try {
         const result = await signInWithGoogle();
         if (!result) {
-          // Fallback to mock user if Firebase is not configured at all
-          setGoogleUser({
-            displayName: "Demo Voter",
-            photoURL: "",
-            isMock: true,
-          } as any);
+          setAuthError("Sign-in failed. Please ensure Firebase is configured.");
+          setTimeout(() => setAuthError(null), 5000);
         }
       } catch (err: any) {
         if (err.code === "auth/unauthorized-domain") {
-          setAuthError("Unauthorized Domain: Please check Firebase settings.");
-          // Clear error after 5s
-          setTimeout(() => setAuthError(null), 5000);
+          setAuthError("This domain is not authorized for login. Please contact support.");
         } else {
           console.error("Login failed:", err);
           setAuthError("Login failed. Please try again.");
-          setTimeout(() => setAuthError(null), 5000);
         }
+        setTimeout(() => setAuthError(null), 5000);
       }
     }
   }
+
 
   return (
     <>

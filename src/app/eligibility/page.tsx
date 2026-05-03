@@ -127,8 +127,9 @@ export default function EligibilityPage() {
             Prove Your <span className="gradient-text">Eligibility</span>
           </h1>
           <p className="mt-3 text-text-secondary max-w-md mx-auto">
-            Verify you can vote without revealing your identity. Powered by Midnight Network ZK proofs.
+            Verify you can vote without revealing your identity. Powered by ZK proofs.
           </p>
+
         </div>
 
         {step !== "intro" && (
@@ -206,7 +207,8 @@ export default function EligibilityPage() {
             <div className="max-w-xs mx-auto space-y-2 text-xs font-mono text-text-muted mt-4">
               <p className="animate-fade-in">▸ Computing witness...</p>
               <p className="animate-fade-in" style={{ animationDelay: "0.8s" }}>▸ Generating circuit proof...</p>
-              <p className="animate-fade-in" style={{ animationDelay: "1.6s" }}>▸ Verifying on Midnight...</p>
+              <p className="animate-fade-in" style={{ animationDelay: "1.6s" }}>▸ Verifying on-chain...</p>
+
             </div>
           </div>
         )}
@@ -220,7 +222,8 @@ export default function EligibilityPage() {
                 <p className="text-text-secondary text-sm mb-6">Cryptographically verified. Your identity was <strong>never revealed</strong>.</p>
                 <div className="bg-bg-elevated rounded-xl p-4 text-left max-w-sm mx-auto mb-6 text-xs font-mono space-y-2">
                   <div className="flex justify-between"><span className="text-text-muted">Status:</span><span className="text-success">eligibility_verified = true</span></div>
-                  <div className="flex justify-between"><span className="text-text-muted">Network:</span><span className="text-text-primary">Midnight Mainnet</span></div>
+                  <div className="flex justify-between"><span className="text-text-muted">Network:</span><span className="text-text-primary">Secure Mainnet</span></div>
+
                   <div className="flex justify-between"><span className="text-text-muted">Data exposed:</span><span className="text-accent">None</span></div>
                 </div>
 

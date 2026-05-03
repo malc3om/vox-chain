@@ -1,14 +1,5 @@
-/**
- * In-memory sliding-window rate limiter.
- *
- * Designed for serverless/Cloud Run — limits are per-instance.
- * For production, swap with a Redis-backed limiter (e.g., @upstash/ratelimit).
- *
- * Uses a simple token bucket approach with automatic cleanup
- * of expired entries to prevent memory leaks.
- */
-
 interface RateLimitEntry {
+
   timestamps: number[];
 }
 

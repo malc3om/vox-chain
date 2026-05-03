@@ -1,0 +1,55 @@
+{
+  "election_2026": {
+    "title": "2026 General Elections",
+    "date": "2026-11-03",
+    "deadlines": {
+      "voter_registration": "2026-10-05",
+      "early_voting_start": "2026-10-19",
+      "early_voting_end": "2026-10-31",
+      "mail_in_ballot_request": "2026-10-27"
+    },
+    "eligibility_rules": [
+      "Must be a citizen of the country.",
+      "Must be at least 18 years of age on or before Election Day.",
+      "Must be a resident of the district for at least 30 days prior to the election.",
+      "Must not be currently serving a sentence for a felony conviction (laws vary by state)."
+    ],
+    "identification_requirements": [
+      "Government-issued photo ID (Driver's License, Passport, State ID).",
+      "If no photo ID: Utility bill, bank statement, or paycheck showing name and address (in some jurisdictions)."
+    ],
+    "voting_methods": [
+      {
+        "type": "In-Person",
+        "details": "Vote at your assigned polling place on Nov 3, 2026, from 7:00 AM to 8:00 PM."
+      },
+      {
+        "type": "Early Voting",
+        "details": "Participating locations open from Oct 19 to Oct 31."
+      },
+      {
+        "type": "Mail-in Ballot",
+        "details": "Request by Oct 27. Must be postmarked by Election Day."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Can I register on Election Day?",
+        "answer": "Only in participating states with Same-Day Registration (SDR). Check your local district rules."
+      },
+      {
+        "question": "How do I find my polling place?",
+        "answer": "Use the VoxChain District Finder or visit the official Board of Elections website."
+      },
+      {
+        "question": "What if I am out of the country?",
+        "answer": "You can vote using an Absentee Ballot under the UOCAVA act. Request your ballot at least 45 days before the election."
+      }
+    ]
+  },
+  "voxchain_technology": {
+    "zk_proofs": "VoxChain uses Zero-Knowledge Proofs (ZKP) to verify your eligibility without ever seeing your private data. A ZK proof allows you to prove you are over 18 and a resident without revealing your birthdate or address.",
+    "privacy_network": "The underlying infrastructure is a data-protection blockchain that enables programmable privacy. It uses specialized smart contracts that can verify private data locally on your device.",
+    "privacy_guarantee": "Your data never leaves your browser. The proof server runs locally (port 6300) and only the final 'verified' signal is sent to the blockchain."
+  }
+}

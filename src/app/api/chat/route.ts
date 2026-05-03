@@ -1,15 +1,5 @@
-/**
- * Chat API Route — Gemini 2.0 Flash Civic Q&A
- *
- * Uses the shared Gemini client from `lib/ai/gemini.ts`.
- * Falls back to curated civic knowledge when the API key is missing.
- *
- * @route POST /api/chat
- * @body { message: string, history?: { role: string, content: string }[] }
- * @returns { response: string, source: "gemini" | "fallback" }
- */
-
 import { NextRequest } from "next/server";
+
 import { isGeminiConfigured, askGemini, type GeminiMessage } from "@/lib/ai/gemini";
 import { getFallbackResponse } from "@/lib/ai/prompts";
 import { logChatSession } from "@/lib/firebase";

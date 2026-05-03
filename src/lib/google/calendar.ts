@@ -1,9 +1,3 @@
-/**
- * Google Calendar API Helper
- *
- * Creates calendar events for election phases.
- * Uses the Google Calendar REST API v3.
- */
 
 const CALENDAR_API = "https://www.googleapis.com/calendar/v3";
 
@@ -108,7 +102,7 @@ export function getCalendarUrl(event: CalendarEvent): string {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-// ── Private helpers ──────────────────────────────────────
+
 
 const MONTHS: Record<string, string> = {
   jan: "01", feb: "02", mar: "03", apr: "04",

@@ -1,0 +1,20 @@
+pragma language compact;
+
+import "@midnight-ntwrk/compact-runtime";
+
+/**
+ * Quiz Verifier Contract
+ * Proves the user achieved a certain score.
+ */
+export circuit verifyScore(
+  witness secret_seed: Bytes<32>,
+  public score: Uint32
+): Bytes<32> {
+  // Simple check: score must be within valid range
+  assert score <= 10;
+  
+  // Generate a nullifier to prevent double-claiming a high score with the same seed
+  const nullifier = hash(secret_seed, score);
+  
+  return nullifier;
+}

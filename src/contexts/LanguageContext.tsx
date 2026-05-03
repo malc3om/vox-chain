@@ -8,7 +8,8 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import type { LanguageCode } from "@/lib/google/translate";
+import type { LanguageCode } from "@/lib/constants";
+
 
 interface LanguageContextValue {
   language: LanguageCode;

@@ -4,10 +4,11 @@
 
 export const APP_NAME = "VoxChain";
 export const APP_TAGLINE = "Understand your vote. Prove your eligibility. Trust nothing revealed.";
-export const APP_DESCRIPTION = "AI-powered civic education assistant on Midnight Network with zero-knowledge proofs for privacy-first voter eligibility verification.";
+export const APP_DESCRIPTION = "AI-powered civic education assistant with zero-knowledge proofs for privacy-first voter eligibility verification.";
 
 export const MIDNIGHT_NETWORK = {
-  name: "Midnight Network",
+  name: "Secure Network",
+
   url: "https://midnight.network",
   docsUrl: "https://docs.midnight.network",
   explorerUrl: "https://explorer.midnight.network",
@@ -29,3 +30,15 @@ export const CIVIC_SOURCES = {
   senate: "senate.gov",
   midnight: "midnight.network",
 } as const;
+
+export const SUPPORTED_LANGUAGES = [
+  { code: "en", label: "English", native: "English" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "es", label: "Spanish", native: "Español" },
+  { code: "fr", label: "French", native: "Français" },
+  { code: "ar", label: "Arabic", native: "العربية" },
+  { code: "pt", label: "Portuguese", native: "Português" },
+] as const;
+
+export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
+

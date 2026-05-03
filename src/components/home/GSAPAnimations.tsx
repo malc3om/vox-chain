@@ -107,15 +107,14 @@ export default function GSAPAnimations({
         }
       );
 
-      // 7. Ribbon Infinite Marquee - Fixed with Ref targeting
-      if (ribbonRef.current) {
-        gsap.to(ribbonRef.current, {
-          xPercent: -50,
-          ease: "none",
-          duration: 20,
-          repeat: -1,
-        });
-      }
+      // 7. Ribbon Infinite Marquee - Fixed with Class targeting for reliability
+      gsap.to(".ribbon-content", {
+        xPercent: -50,
+        ease: "none",
+        duration: 20,
+        repeat: -1,
+      });
+
 
       // 8. Floating background orbs parallax + constant drift
       const orbs = document.querySelectorAll(".floating-orb");
@@ -143,8 +142,9 @@ export default function GSAPAnimations({
         });
       }
     },
-    { scope: containerRef, dependencies: [] }
+    { scope: containerRef, dependencies: [containerRef, ribbonRef] }
   );
+
 
   return null;
 }

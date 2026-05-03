@@ -1,11 +1,5 @@
-/**
- * Midnight Wallet Integration
- * 
- * Connects to Lace wallet (Midnight edition) via DApp Connector API.
- * Provides wallet state, balance, and transaction capabilities.
- */
+// @ts-ignore
 
-// @ts-expect-error: Private registry access required
 import type { DAppConnectorAPI } from '@midnight-ntwrk/midnight-js-dapp-connector';
 
 export interface WalletState {
@@ -31,7 +25,7 @@ export function isWalletAvailable(): boolean {
 export async function connectWallet(): Promise<WalletState> {
   if (!isWalletAvailable()) {
     throw new Error(
-      "Lace wallet not found. Please install the Lace Beta Wallet for Midnight Network."
+      "Lace wallet not found. Please install the Lace Beta Wallet for the secure network."
     );
   }
 
@@ -40,8 +34,9 @@ export async function connectWallet(): Promise<WalletState> {
     const wallet = voxWindow.midnight?.mnLace;
 
     if (!wallet) {
-      throw new Error("Lace Midnight extension not detected.");
+      throw new Error("Secure wallet extension not detected.");
     }
+
 
     // Request wallet connection
     const walletAPI = await wallet.enable();

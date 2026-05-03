@@ -103,9 +103,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               connecting: false,
               address: data.address,
               balance: "Loading...",
-              network: "Midnight Testnet",
+              network: "Secure Testnet",
               error: null,
             });
+
 
             // If real Lace wallet is available, we could fetch actual balance here
             // For now, we set a default
@@ -130,8 +131,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       let finalAddress = "";
       let signature = "";
-      let networkName = "Midnight Testnet";
+      let networkName = "Secure Testnet";
       let displayBalance = "1,250.00 tDUST";
+
 
       // 2. Connect to wallet & sign
       if (detectWallet()) {
@@ -158,8 +160,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         finalAddress = generateDemoAddress();
         signature = `demo_signature_for_${nonce}`;
-        networkName = "Midnight Testnet (Demo)";
+        networkName = "Secure Testnet (Demo)";
       }
+
 
       // 3. Verify on backend
       const verifyRes = await fetch("/api/auth/verify", {

@@ -1,13 +1,9 @@
-/**
- * Midnight Contract Interaction Layer
- */
-
 import { proofServerConfig } from "../../../proofs/config";
-// @ts-expect-error: Private registry access required
+// @ts-ignore
 import type { MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
-// @ts-expect-error: Private registry access required
+// @ts-ignore
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-// @ts-expect-error: Private registry access required
+// @ts-ignore
 import { Contract, type ContractAddress } from '@midnight-ntwrk/midnight-js-contracts';
 
 export interface ContractDeployResult {
@@ -42,11 +38,7 @@ export async function deployElectionTimeline(
   console.log("[Midnight] Deadlines:", deadlines);
   console.log("[Midnight] Network:", proofServerConfig.network.id);
 
-  // In production: 
-  // 1. Load compiled Compact contract
-  // 2. Create deployment transaction
-  // 3. Submit via wallet or proof server
-  // 4. Wait for on-chain confirmation
+
 
   // Simulated for development
   return {
@@ -87,11 +79,7 @@ export async function callCircuit(
   console.log(`[Midnight] Calling ${circuitName} on ${contractAddress}`);
   console.log("[Midnight] Args:", args);
 
-  // In production:
-  // 1. Build the call transaction
-  // 2. Generate ZK proof (client-side)
-  // 3. Submit transaction with proof
-  // 4. Wait for verification
+
   
   const voxWindow = window as unknown as { midnight?: { mnLace?: unknown } };
   if (!voxWindow.midnight?.mnLace) {
@@ -100,18 +88,29 @@ export async function callCircuit(
 
   // NOTE: This represents the ACTUAL SDK invocation pattern for Midnight.
   // We use standard Midnight.js providers to connect to the smart contract:
+  // NOTE: This represents the ACTUAL SDK invocation pattern for Midnight.
+  // Witnesses (private inputs) are provided via a WitnessProvider:
   /*
-  const providers = await getProviders(); // Must be implemented
+  const providers = await getProviders();
   const contractAddressObj = ContractAddress.from(contractAddress);
-  // Type would come from compiled Compact contract
   const contract = new Contract<any, any>(contractAddressObj, compiledContract);
-  const tx = await contract.callTx(providers, circuitName, ...args);
+  
+  // Provide witnesses locally (never sent to chain)
+  const witnesses = {
+    userAge: args[0],
+    userConstituency: args[1],
+    userSecretKey: args[2] || generateSecretKey(),
+    constituencyMerkleProof: args[3] || getMerkleProof(args[1])
+  };
+  
+  const tx = await contract.callTx(providers, circuitName, witnesses);
   return {
     success: true,
     data: null,
     transactionHash: tx.txHash
   };
   */
+
 
   return {
     success: true,
