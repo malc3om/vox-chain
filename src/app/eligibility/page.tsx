@@ -42,6 +42,13 @@ export default function EligibilityPage() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [formData, setFormData] = useState({ age: "", constituency: "" });
   const [isEligible, setIsEligible] = useState<boolean | null>(null);
+  const [isWindows, setIsWindows] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setIsWindows(navigator.platform.toLowerCase().includes("win"));
+    }
+  }, []);
 
   async function handleConnect() {
     setStep("connect");
@@ -144,7 +151,7 @@ export default function EligibilityPage() {
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center text-4xl glow-primary">🔐</div>
             <h2 className="font-heading text-2xl font-bold mb-3">Private Eligibility Check</h2>
             <p className="text-text-secondary mb-6 max-w-sm mx-auto text-sm">Your personal data <strong>never leaves your device</strong>.</p>
-            {navigator.platform.toLowerCase().includes("win") && (
+            {isWindows && (
               <div className="mb-4 text-xs bg-warning/10 border border-warning/30 text-warning px-4 py-2 rounded-lg">
                 ⚠️ Note: Midnight SDK currently requires Linux/Mac. Proofs will be simulated on Windows.
               </div>
