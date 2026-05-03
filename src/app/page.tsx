@@ -187,12 +187,7 @@ export default function Home() {
         </div>
 
         <h1 className="hero-elem font-heading text-6xl md:text-8xl font-bold text-center leading-[1.05] max-w-5xl tracking-tighter z-10 relative">
-          The Future of <span className="scribble-text">
-            Civic Trust.
-            <svg viewBox="0 0 300 20" preserveAspectRatio="none">
-              <path d="M5,15 Q150,5 295,15 T295,15" />
-            </svg>
-          </span>
+          The Future of Civic Trust.
         </h1>
 
 
