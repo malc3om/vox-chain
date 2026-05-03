@@ -1,9 +1,9 @@
 import { proofServerConfig } from "../../../proofs/config";
-// @ts-ignore
+
 import type { MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
-// @ts-ignore
+
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-// @ts-ignore
+// @ts-expect-error
 import { Contract, type ContractAddress } from '@midnight-ntwrk/midnight-js-contracts';
 
 export interface ContractDeployResult {
@@ -37,8 +37,6 @@ export async function deployElectionTimeline(
   console.log("[Midnight] Admin:", adminPublicKey);
   console.log("[Midnight] Deadlines:", deadlines);
   console.log("[Midnight] Network:", proofServerConfig.network.id);
-
-
 
   // Simulated for development
   return {
@@ -79,39 +77,10 @@ export async function callCircuit(
   console.log(`[Midnight] Calling ${circuitName} on ${contractAddress}`);
   console.log("[Midnight] Args:", args);
 
-
-  
   const voxWindow = window as unknown as { midnight?: { mnLace?: unknown } };
   if (!voxWindow.midnight?.mnLace) {
     throw new Error("Lace wallet not found. Required for ZK proof generation.");
   }
-
-  // NOTE: This represents the ACTUAL SDK invocation pattern for Midnight.
-  // We use standard Midnight.js providers to connect to the smart contract:
-  // NOTE: This represents the ACTUAL SDK invocation pattern for Midnight.
-  // Witnesses (private inputs) are provided via a WitnessProvider:
-  /*
-  const providers = await getProviders();
-  const contractAddressObj = ContractAddress.from(contractAddress);
-  const contract = new Contract<any, any>(contractAddressObj, compiledContract);
-  
-  // Provide witnesses locally (never sent to chain)
-  const witnesses = {
-    userAge: args[0],
-    userConstituency: args[1],
-    userSecretKey: args[2] || generateSecretKey(),
-    constituencyMerkleProof: args[3] || getMerkleProof(args[1])
-  };
-  
-  const tx = await contract.callTx(providers, circuitName, witnesses);
-  return {
-    success: true,
-    data: null,
-    transactionHash: tx.txHash
-  };
-  */
-
-
   return {
     success: true,
     data: null,
@@ -129,13 +98,6 @@ export async function queryContract(
 ): Promise<unknown> {
   console.log(`[Midnight] Querying ${queryName} on ${contractAddress}`);
 
-  // In production: query the indexer for contract state via providers
-  /*
-  const providers = await getProviders();
-  const contractAddressObj = ContractAddress.from(contractAddress);
-  const state = await providers.publicDataProvider.queryContractState(contractAddressObj);
-  return state.data[queryName];
-  */
   return null;
 }
 
