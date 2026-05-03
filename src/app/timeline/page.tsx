@@ -107,7 +107,7 @@ function getStatusColor(status: string) {
     case "completed":
       return "bg-success/20 text-success border-success/30";
     case "active":
-      return "bg-primary/20 text-primary-light border-primary/30";
+      return "bg-accent/20 text-accent border-accent/30";
     case "upcoming":
       return "bg-bg-elevated text-text-muted border-glass-border";
     default:
@@ -207,7 +207,7 @@ export default function TimelinePage() {
         {/* Header */}
         <div className="text-center mb-12 animate-slide-up">
           <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-sm text-text-secondary mb-4">
-            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse-glow" />
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             On-Chain Election Tracker
           </div>
           <h1 className="font-heading text-4xl md:text-5xl font-bold">
@@ -236,7 +236,7 @@ export default function TimelinePage() {
               <span className="text-xs text-text-muted">
                 {activeIndex + 1} of {electionPhases.length} phases
               </span>
-              <span className="text-xs text-primary font-medium">
+              <span className="text-xs text-accent font-medium">
                 {Math.round(progressPercent)}% Complete
               </span>
             </div>
@@ -246,7 +246,7 @@ export default function TimelinePage() {
         {/* Timeline */}
         <div className="relative">
           {/* Vertical connector line */}
-          <div className="absolute left-6 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-success via-primary to-bg-elevated" />
+          <div className="absolute left-6 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-success via-accent to-bg-elevated" />
 
           <div className="flex flex-col gap-4">
             {electionPhases.map((phase, i) => {
@@ -266,7 +266,7 @@ export default function TimelinePage() {
                         phase.status === "completed"
                           ? "bg-success border-success"
                           : isActive
-                            ? "bg-primary border-primary-light glow-primary"
+                            ? "bg-accent border-accent shadow-[0_0_15px_rgba(253,224,71,0.5)]"
                             : "bg-bg-deep border-text-muted"
                       }`}
                   />
@@ -277,8 +277,8 @@ export default function TimelinePage() {
                       setSelectedPhase(isSelected ? null : phase.id)
                     }
                     className={`ml-14 md:ml-18 w-[calc(100%-3.5rem)] md:w-[calc(100%-4.5rem)] text-left glass rounded-2xl p-5 card-hover cursor-pointer transition-all
-                      ${isSelected ? "glow-primary border-primary/30" : ""}
-                      ${isActive ? "border-primary/20" : ""}
+                      ${isSelected ? "border-accent/30 shadow-[0_0_20px_rgba(253,224,71,0.1)]" : ""}
+                      ${isActive ? "border-accent/20" : ""}
                     `}
                     id={`timeline-phase-${phase.id}`}
                   >
@@ -315,7 +315,7 @@ export default function TimelinePage() {
                               key={j}
                               className="flex items-start gap-2 text-sm text-text-secondary"
                             >
-                              <span className="text-primary mt-0.5">▸</span>
+                              <span className="text-accent mt-0.5">▸</span>
                               {detail}
                             </li>
                           ))}

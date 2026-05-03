@@ -206,7 +206,7 @@ function ChatContent() {
         {/* Header */}
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center animate-slide-up">
-            <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center text-3xl mb-6 glow-primary">
+            <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center text-bg-deep text-3xl mb-6 shadow-[0_0_30px_rgba(253,224,71,0.2)]">
               ◎
             </div>
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-center mb-3">
@@ -250,16 +250,16 @@ function ChatContent() {
                   <div
                     className={`max-w-[80%] px-5 py-3 ${
                       msg.role === "user"
-                        ? "chat-bubble-user text-white"
+                        ? "chat-bubble-user"
                         : "chat-bubble-ai text-text-primary"
                     }`}
                   >
                     {msg.role === "ai" && (
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-5 h-5 rounded-md gradient-primary flex items-center justify-center text-[10px]">
+                        <div className="w-5 h-5 rounded-md bg-accent flex items-center justify-center text-[10px] text-bg-deep font-bold">
                           V
                         </div>
-                        <span className="text-xs font-medium text-primary-light">
+                        <span className="text-xs font-medium text-accent">
                           VoxChain AI
                         </span>
                         {/* TTS Button */}
@@ -293,7 +293,7 @@ function ChatContent() {
               <div className="flex justify-start animate-fade-in">
                 <div className="chat-bubble-ai px-5 py-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-md gradient-primary flex items-center justify-center text-[10px]">
+                    <div className="w-5 h-5 rounded-md bg-accent flex items-center justify-center text-[10px] text-bg-deep font-bold">
                       V
                     </div>
                     <div className="flex gap-1.5">
@@ -314,7 +314,7 @@ function ChatContent() {
         <div className="sticky bottom-0 py-4 bg-gradient-to-t from-bg-deep via-bg-deep to-transparent">
           <form onSubmit={handleSubmit}>
             <div className="relative group">
-              <div className="absolute -inset-0.5 rounded-2xl gradient-primary opacity-10 group-focus-within:opacity-30 transition-opacity blur" />
+              <div className="absolute -inset-0.5 rounded-2xl bg-accent opacity-10 group-focus-within:opacity-30 transition-opacity blur" />
               <div className="relative glass rounded-2xl flex items-center gap-2 p-2">
                 <input
                   ref={inputRef}

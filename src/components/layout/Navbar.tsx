@@ -80,26 +80,19 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Invisible trigger zone at the top for hover detection */}
-      <div 
-        className="fixed top-0 left-0 right-0 h-16 z-[60]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      />
-
       <nav
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled && !isHovered ? "-translate-y-full" : "translate-y-0"
+          isScrolled && !isHovered ? "-translate-y-[calc(100%-5px)]" : "translate-y-0"
         } ${isScrolled ? "glass-header py-3 shadow-lg" : "bg-transparent py-5"}`}
       >
         <div className="max-w-7xl mx-auto px-[var(--spacing-page)] flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-full border border-text-secondary flex items-center justify-center overflow-hidden relative transition-transform duration-300 group-hover:scale-110">
-              <div className="absolute inset-0 bg-text-primary opacity-0 group-hover:opacity-10 transition-opacity" />
-              <div className="w-2.5 h-2.5 bg-text-primary rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+            <div className="w-8 h-8 rounded-full border border-accent/30 flex items-center justify-center overflow-hidden relative transition-transform duration-300 group-hover:scale-110">
+              <div className="absolute inset-0 bg-accent opacity-0 group-hover:opacity-10 transition-opacity" />
+              <div className="w-2.5 h-2.5 bg-accent rounded-full shadow-[0_0_10px_rgba(253,224,71,0.5)]" />
             </div>
             <span className="font-heading font-medium text-lg tracking-[0.2em] uppercase text-text-primary">
               VoxChain
@@ -118,8 +111,8 @@ export default function Navbar() {
                     relative px-5 py-2 text-sm font-medium rounded-full transition-all duration-300
                     ${
                       isActive
-                        ? "bg-white/10 text-text-primary shadow-sm"
-                        : "text-text-muted hover:text-text-primary hover:bg-white/5"
+                        ? "bg-accent/10 text-accent shadow-sm"
+                        : "text-text-muted hover:text-text-primary hover:bg-accent/5"
                     }
                   `}
                 >
@@ -162,7 +155,7 @@ export default function Navbar() {
                       }}
                       className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between transition-colors ${
                         language === lang.code
-                          ? "text-primary bg-primary/10"
+                          ? "text-accent bg-accent/10"
                           : "text-text-secondary hover:text-text-primary hover:bg-white/5"
                       }`}
                     >
@@ -194,7 +187,7 @@ export default function Navbar() {
                       className="w-5 h-5 rounded-full"
                     />
                   ) : (
-                    <span className="w-5 h-5 rounded-full bg-primary/30 flex items-center justify-center text-[10px] font-bold">
+                    <span className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-[10px] font-bold text-accent">
                       {googleUser.displayName?.charAt(0) ?? "G"}
                     </span>
                   )}
@@ -221,8 +214,8 @@ export default function Navbar() {
               onClick={() => setWalletModalOpen(true)}
               className={`text-sm flex items-center gap-2 py-2.5 px-6 rounded-full transition-all duration-300 font-medium ${
                 connected
-                  ? "bg-white/10 text-text-primary border border-white/20 hover:bg-white/20"
-                  : "bg-text-primary text-bg-deep hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                  ? "bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20"
+                  : "bg-accent text-bg-deep hover:scale-105 hover:shadow-[0_0_20px_rgba(253,224,71,0.3)]"
               }`}
             >
               <span

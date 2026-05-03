@@ -72,8 +72,8 @@ export default function EligibilityPage() {
     e.preventDefault();
     setStep("proving");
     try {
-      // Simulate checking OS
-      const isWindows = navigator.platform.toLowerCase().includes("win");
+      const platform = typeof navigator !== "undefined" ? navigator.platform.toLowerCase() : "";
+      const isWindows = platform.includes("win");
       if (isWindows) {
         console.warn("Midnight development requires Mac/Linux. Proof generation will be simulated.");
       }
@@ -136,10 +136,10 @@ export default function EligibilityPage() {
             <div className="flex items-center justify-between max-w-md mx-auto">
               {steps.map((s, i) => (
                 <div key={s.id} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i <= currentStepIndex ? "gradient-primary text-white glow-primary" : "bg-bg-elevated text-text-muted border border-glass-border"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i <= currentStepIndex ? "bg-accent text-bg-deep shadow-[0_0_15px_rgba(253,224,71,0.3)]" : "bg-bg-elevated text-text-muted border border-glass-border"}`}>
                     {i < currentStepIndex ? "✓" : s.num}
                   </div>
-                  {i < steps.length - 1 && <div className={`w-12 md:w-20 h-0.5 mx-1 transition-all ${i < currentStepIndex ? "bg-primary" : "bg-bg-elevated"}`} />}
+                  {i < steps.length - 1 && <div className={`w-12 md:w-20 h-0.5 mx-1 transition-all ${i < currentStepIndex ? "bg-accent" : "bg-bg-elevated"}`} />}
                 </div>
               ))}
             </div>
@@ -148,7 +148,7 @@ export default function EligibilityPage() {
 
         {step === "intro" && (
           <div className="glass rounded-2xl p-8 text-center animate-slide-up">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center text-4xl glow-primary">🔐</div>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center text-4xl shadow-[0_0_30px_rgba(253,224,71,0.2)]">🔐</div>
             <h2 className="font-heading text-2xl font-bold mb-3">Private Eligibility Check</h2>
             <p className="text-text-secondary mb-6 max-w-sm mx-auto text-sm">Your personal data <strong>never leaves your device</strong>.</p>
             {isWindows && (
@@ -170,7 +170,7 @@ export default function EligibilityPage() {
 
         {step === "connect" && !walletConnected && (
           <div className="glass rounded-2xl p-8 text-center animate-slide-up">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full border-4 border-accent/30 border-t-accent animate-spin" />
             <h2 className="font-heading text-xl font-bold mb-2">Connecting to Lace Wallet...</h2>
             <p className="text-text-secondary text-sm">Approve the connection in your wallet extension.</p>
           </div>
@@ -183,12 +183,12 @@ export default function EligibilityPage() {
             <form onSubmit={handleProve} className="space-y-5">
               <div>
                 <label htmlFor="age-input" className="block text-sm font-medium text-text-secondary mb-2">Your Age</label>
-                <input id="age-input" type="number" min="1" max="150" value={formData.age} onChange={(e) => setFormData((d) => ({ ...d, age: e.target.value }))} placeholder="Enter your age" className="w-full bg-bg-elevated border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50 transition-colors" required />
+                <input id="age-input" type="number" min="1" max="150" value={formData.age} onChange={(e) => setFormData((d) => ({ ...d, age: e.target.value }))} placeholder="Enter your age" className="w-full bg-bg-elevated border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted outline-none focus:border-accent/50 transition-colors" required />
                 <p className="text-[11px] text-text-muted mt-1">🔒 Used to prove age ≥ 18</p>
               </div>
               <div>
                 <label htmlFor="constituency-input" className="block text-sm font-medium text-text-secondary mb-2">Constituency / District</label>
-                <input id="constituency-input" type="text" value={formData.constituency} onChange={(e) => setFormData((d) => ({ ...d, constituency: e.target.value }))} placeholder="e.g., District 5, Springfield" className="w-full bg-bg-elevated border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50 transition-colors" required />
+                <input id="constituency-input" type="text" value={formData.constituency} onChange={(e) => setFormData((d) => ({ ...d, constituency: e.target.value }))} placeholder="e.g., District 5, Springfield" className="w-full bg-bg-elevated border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted outline-none focus:border-accent/50 transition-colors" required />
                 <p className="text-[11px] text-text-muted mt-1">🔒 Used to prove residency</p>
               </div>
               <button type="submit" className="btn-primary w-full text-base" id="generate-proof-btn">Generate ZK Proof →</button>
@@ -199,8 +199,8 @@ export default function EligibilityPage() {
         {step === "proving" && (
           <div className="glass rounded-2xl p-8 text-center animate-slide-up">
             <div className="relative w-24 h-24 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-ping" />
-              <div className="absolute inset-4 rounded-full gradient-primary flex items-center justify-center"><span className="text-2xl">⚡</span></div>
+              <div className="absolute inset-0 rounded-full border-4 border-accent/20 animate-ping" />
+              <div className="absolute inset-4 rounded-full bg-accent flex items-center justify-center text-bg-deep shadow-[0_0_20px_rgba(253,224,71,0.4)]"><span className="text-2xl">⚡</span></div>
             </div>
             <h2 className="font-heading text-xl font-bold mb-2">Generating Zero-Knowledge Proof...</h2>
             <div className="max-w-xs mx-auto space-y-2 text-xs font-mono text-text-muted mt-4">

@@ -1,21 +1,13 @@
 /**
  * Midnight Contract Interaction Layer
- * 
- * Provides high-level functions for deploying and interacting with
- * Compact smart contracts on the Midnight Network.
- * 
- * In production, these functions use the Midnight.js SDK:
- * - @midnight-ntwrk/compact-runtime
- * - @midnight-ntwrk/midnight-js-contracts
- * - @midnight-ntwrk/midnight-js-types
  */
 
 import { proofServerConfig } from "../../../proofs/config";
-// @ts-ignore
+// @ts-expect-error: Private registry access required
 import type { MidnightProviders } from '@midnight-ntwrk/midnight-js-types';
-// @ts-ignore
+// @ts-expect-error: Private registry access required
 import { NetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-// @ts-ignore
+// @ts-expect-error: Private registry access required
 import { Contract, type ContractAddress } from '@midnight-ntwrk/midnight-js-contracts';
 
 export interface ContractDeployResult {
@@ -101,7 +93,8 @@ export async function callCircuit(
   // 3. Submit transaction with proof
   // 4. Wait for verification
   
-  if (!window || !(window as any).midnight) {
+  const voxWindow = window as unknown as { midnight?: { mnLace?: unknown } };
+  if (!voxWindow.midnight?.mnLace) {
     throw new Error("Lace wallet not found. Required for ZK proof generation.");
   }
 

@@ -5,7 +5,7 @@
  * Provides wallet state, balance, and transaction capabilities.
  */
 
-// @ts-ignore
+// @ts-expect-error: Private registry access required
 import type { DAppConnectorAPI } from '@midnight-ntwrk/midnight-js-dapp-connector';
 
 export interface WalletState {
@@ -20,7 +20,8 @@ export interface WalletState {
  */
 export function isWalletAvailable(): boolean {
   if (typeof window === "undefined") return false;
-  return !!(window as unknown as Record<string, unknown>).midnight;
+  const voxWindow = window as unknown as { midnight?: { mnLace?: unknown } };
+  return !!voxWindow.midnight?.mnLace;
 }
 
 /**
@@ -35,10 +36,8 @@ export async function connectWallet(): Promise<WalletState> {
   }
 
   try {
-    // Access the Midnight wallet API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const midnight = (window as any).midnight;
-    const wallet = midnight?.mnLace;
+    const voxWindow = window as unknown as { midnight?: { mnLace?: { enable: () => Promise<any> } } };
+    const wallet = voxWindow.midnight?.mnLace;
 
     if (!wallet) {
       throw new Error("Lace Midnight extension not detected.");
@@ -67,9 +66,8 @@ export async function getServiceUris() {
   if (!isWalletAvailable()) return null;
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const midnight = (window as any).midnight;
-    const wallet = midnight?.mnLace;
+    const voxWindow = window as unknown as { midnight?: { mnLace?: { serviceUriConfig: () => Promise<any> } } };
+    const wallet = voxWindow.midnight?.mnLace;
     if (!wallet) return null;
 
     return await wallet.serviceUriConfig();

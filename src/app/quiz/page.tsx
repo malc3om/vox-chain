@@ -124,7 +124,7 @@ export default function QuizPage() {
     setTranslatedQuestion(null); setTranslatedOptions(null);
   }
 
-  const difficultyColor = { easy: "text-success", medium: "text-accent-warm", hard: "text-accent" };
+  const difficultyColor = { easy: "text-success", medium: "text-accent/80", hard: "text-accent" };
 
   // Persist final result to Firebase when quiz completes
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function QuizPage() {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10 animate-slide-up">
           <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-sm text-text-secondary mb-4">
-            <span className="text-accent-warm">△</span> AI-Adaptive Quiz
+            <span className="text-accent">△</span> AI-Adaptive Quiz
           </div>
           <h1 className="font-heading text-4xl md:text-5xl font-bold">
             Civic <span className="gradient-text">Knowledge</span> Quiz
@@ -160,7 +160,7 @@ export default function QuizPage() {
 
         {!started && !finished && (
           <div className="glass rounded-2xl p-8 text-center animate-slide-up">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent-warm to-accent flex items-center justify-center text-4xl">🎓</div>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center text-4xl text-bg-deep">🎓</div>
             <h2 className="font-heading text-2xl font-bold mb-3">Ready to Test Your Knowledge?</h2>
             <p className="text-text-secondary text-sm mb-2">{maxQuestions} questions • Adaptive difficulty • Instant explanations</p>
             <p className="text-text-muted text-xs mb-6">Wrong answers trigger AI explanations to help you learn.</p>
@@ -174,7 +174,7 @@ export default function QuizPage() {
               <span className="text-sm text-text-muted">Question {answered + 1} of {maxQuestions}</span>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-medium ${difficultyColor[difficulty]}`}>{difficulty.toUpperCase()}</span>
-                <span className="text-sm font-mono text-primary">{score}/{answered}</span>
+                <span className="text-sm font-mono text-accent">{score}/{answered}</span>
               </div>
             </div>
             <div className="progress-bar mb-6"><div className="progress-bar-fill" style={{ width: `${(answered / maxQuestions) * 100}%` }} /></div>
@@ -188,7 +188,7 @@ export default function QuizPage() {
                 {displayOptions.map((option, i) => {
                   const isCorrect = i === currentQuestion.correct;
                   const isSelected = i === selected;
-                  let borderClass = "border-glass-border hover:border-primary/40";
+                  let borderClass = "border-glass-border hover:border-accent/40";
                   if (selected !== null) {
                     if (isCorrect) borderClass = "border-success bg-success/10";
                     else if (isSelected) borderClass = "border-error bg-error/10";
@@ -213,7 +213,7 @@ export default function QuizPage() {
             {showExplanation && (
               <div className="glass rounded-2xl p-5 animate-slide-up mb-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center text-sm shrink-0">V</div>
+                  <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-sm shrink-0 text-bg-deep font-bold">V</div>
                   <div>
                     <p className="text-sm text-text-primary leading-relaxed">{currentQuestion.explanation}</p>
                     <p className="text-[11px] text-text-muted mt-2">📚 Source: {currentQuestion.source}</p>

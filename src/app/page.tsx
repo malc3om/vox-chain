@@ -187,7 +187,7 @@ export default function Home() {
           className="hero-elem mt-12 w-full max-w-2xl z-10 relative"
         >
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-purple-500/20 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-r from-accent/30 to-zinc-500/10 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative bg-bg-surface border border-white/10 rounded-full flex items-center p-2 backdrop-blur-md transition-all duration-300 focus-within:border-white/30 focus-within:bg-bg-elevated shadow-2xl">
               <input
                 id="hero-search-input"
@@ -199,7 +199,7 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="bg-white text-black px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:scale-105 transition-transform duration-300"
+                className="bg-accent text-bg-deep px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(253,224,71,0.2)]"
                 id="hero-ask-btn"
               >
                 Ask VoxChain
@@ -251,9 +251,9 @@ export default function Home() {
                 Built on Cutting-Edge Technology
               </h2>
               <div className="space-y-6">
-                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-primary/50 transition-colors">
+                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-accent transition-colors">
                   <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
-                    <Shield className="text-primary w-6 h-6" /> Midnight Network & ZK
+                    <Shield className="text-accent w-6 h-6" /> Midnight Network & ZK
                   </h3>
                   <p className="text-text-secondary leading-relaxed">
                     We use the Midnight Network's Compact smart contracts to implement true Zero-Knowledge (ZK) proofs. Your private data (witnesses) is computed locally, and only the cryptographic proof goes on-chain, ensuring absolute privacy.
@@ -267,9 +267,9 @@ export default function Home() {
                     Our civic assistant uses Google's Gemini SDK to provide unbiased, easily digestible answers to complex election questions, empowering you to make informed decisions.
                   </p>
                 </div>
-                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-purple-500/50 transition-colors">
+                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-zinc-500 transition-colors">
                   <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
-                    <Activity className="text-purple-500 w-6 h-6" /> Modern Web Stack
+                    <Activity className="text-zinc-400 w-6 h-6" /> Modern Web Stack
                   </h3>
                   <p className="text-text-secondary leading-relaxed">
                     Powered by Next.js App Router, React 19, and Tailwind CSS. Deployed on Google Cloud Run for limitless scalability. Enhanced with GSAP ScrollTrigger for buttery smooth, scroll-driven animations.
@@ -280,8 +280,8 @@ export default function Home() {
             <div className="relative h-[600px] w-full rounded-3xl border border-white/10 bg-gradient-to-br from-bg-surface to-bg-elevated overflow-hidden shadow-2xl flex items-center justify-center">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
               <div className="relative z-10 text-center space-y-4">
-                <div className="w-24 h-24 mx-auto rounded-full bg-primary/20 border border-primary flex items-center justify-center glow-primary">
-                  <Cpu className="w-10 h-10 text-primary" />
+                <div className="w-24 h-24 mx-auto rounded-full bg-accent/20 border border-accent flex items-center justify-center shadow-[0_0_30px_rgba(253,224,71,0.2)]">
+                  <Cpu className="w-10 h-10 text-accent" />
                 </div>
                 <h3 className="text-2xl font-bold font-heading">Dual-State Architecture</h3>
                 <p className="text-sm text-text-muted max-w-xs mx-auto">Public Ledger + Private Local State = Absolute Voter Privacy.</p>
@@ -296,7 +296,7 @@ export default function Home() {
         {/* Animated Background Orbs */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center">
           <div className="floating-orb w-96 h-96 bg-accent rounded-full blur-[100px] absolute -top-20 -left-20" />
-          <div className="floating-orb w-[500px] h-[500px] bg-purple-600 rounded-full blur-[120px] absolute top-40 right-10" />
+          <div className="floating-orb w-[500px] h-[500px] bg-zinc-600 rounded-full blur-[120px] absolute top-40 right-10" />
         </div>
 
         <div className="max-w-7xl mx-auto px-[var(--spacing-page)] py-32 border-t border-white/5 relative z-10">
@@ -333,7 +333,7 @@ export default function Home() {
             {["Registration", "Campaigning", "Voting Day", "Tally & Audit", "Results"].map((phase, i) => (
               <div key={phase} className="timeline-node relative pl-8 pb-10 md:pl-0 md:pb-0 md:flex-1 md:text-center group">
                 {/* Node Dot */}
-                <div className="absolute left-[-5px] top-0 md:top-[-45px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-white/20 group-hover:bg-accent group-hover:shadow-[0_0_15px_rgba(var(--color-accent),0.5)] transition-all duration-300" />
+                <div className="absolute left-[-5px] top-0 md:top-[-45px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-accent/20 group-hover:bg-accent group-hover:shadow-[0_0_15px_rgba(253,224,71,0.5)] transition-all duration-300" />
                 <h4 className="text-xl font-medium text-white mb-2">{phase}</h4>
                 <p className="text-sm text-text-muted">Phase {i + 1}</p>
               </div>
@@ -343,15 +343,15 @@ export default function Home() {
       </section>
 
       {/* ── Moving Ribbon Marquee ───────── */}
-      <div className="ribbon-container relative w-full overflow-hidden bg-gray-800 text-yellow-100 py-4 z-20 rotate-1 border-y border-gray-700 shadow-2xl">
+      <div className="ribbon-container relative w-full overflow-hidden bg-bg-elevated text-accent py-4 z-20 rotate-1 border-y border-accent/10 shadow-2xl">
         <div className="ribbon-content whitespace-nowrap flex font-heading text-xl font-bold uppercase tracking-widest items-center">
           {[...Array(10)].map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-4">
               <Shield className="w-5 h-5" />
               Privacy First
-              <span className="mx-4 text-yellow-100/50">•</span>
+              <span className="mx-4 text-accent/50">•</span>
               Zero-Knowledge Proofs
-              <span className="mx-4 text-yellow-100/50">•</span>
+              <span className="mx-4 text-accent/50">•</span>
               Immutable Records
             </span>
           ))}
