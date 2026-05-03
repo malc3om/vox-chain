@@ -91,17 +91,19 @@ export default function Navbar() {
           isScrolled && !isHovered ? "-translate-y-[calc(100%-5px)]" : "translate-y-0"
         } ${isScrolled ? "glass-header py-3 shadow-lg" : "bg-transparent py-5"}`}
       >
-        <div className="max-w-7xl mx-auto px-[var(--spacing-page)] flex items-center justify-between relative h-20">
-          {/* Logo - Top Left */}
-          <Link href="/" className="flex items-center gap-3 group absolute left-[var(--spacing-page)]">
-            <div className="w-8 h-8 rounded-full border border-accent/30 flex items-center justify-center overflow-hidden relative transition-transform duration-300 group-hover:scale-110">
-              <div className="absolute inset-0 bg-accent opacity-0 group-hover:opacity-10 transition-opacity" />
-              <div className="w-2.5 h-2.5 bg-accent rounded-full shadow-[0_0_10px_rgba(253,224,71,0.5)]" />
+        {/* Logo - Top Left */}
+        <Link href="/" className="absolute top-1/2 -translate-y-1/2 left-8 z-[60] group flex items-center gap-0">
+          <div className="bg-black text-white p-2.5 flex items-center justify-center border-2 border-white/20 shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:bg-accent group-hover:text-bg-deep group-hover:border-accent">
+            <span className="font-[family-name:var(--font-syne)] font-black text-2xl leading-none">V</span>
+          </div>
+          <div className="bg-transparent py-1 px-4 flex items-center transition-all duration-500">
+            <div className="font-[family-name:var(--font-syne)] font-black text-white uppercase leading-none text-[22px] tracking-tighter group-hover:text-accent transition-colors duration-500">
+              OXCHAIN
             </div>
-            <span className="font-heading font-medium text-lg tracking-[0.2em] uppercase text-text-primary">
-              VoxChain
-            </span>
-          </Link>
+          </div>
+        </Link>
+
+        <div className="max-w-7xl mx-auto px-[var(--spacing-page)] flex items-center justify-center relative h-20">
  
           {/* Main Desktop Nav - Centered & Enlarged */}
           <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 gap-2 p-1.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-2xl shadow-2xl scale-110">
@@ -127,7 +129,7 @@ export default function Navbar() {
           </div>
  
           {/* Top-Right Utility Stack - Vertically Stacked */}
-          <div className="hidden md:flex flex-col items-end gap-2 fixed top-8 right-8 z-[60]">
+          <div className="hidden md:flex flex-col items-end gap-2 absolute top-1/2 -translate-y-1/2 right-8 z-[60]">
             {/* Language Selector */}
             <div className="relative group/lang">
               <button

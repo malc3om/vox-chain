@@ -1,4 +1,5 @@
 
+// @ts-expect-error
 import type { DAppConnectorAPI } from '@midnight-ntwrk/midnight-js-dapp-connector';
 
 export interface WalletState {

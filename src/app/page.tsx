@@ -171,32 +171,37 @@ export default function Home() {
       <GSAPAnimations containerRef={container} ribbonRef={ribbonRef} />
 
       {/* ── 3D Hero Section ────────────────── */}
-      <section className="hero-section relative w-full flex flex-col items-center justify-center pt-48 pb-40 px-8 overflow-hidden">
+      <section className="hero-section relative w-full h-screen flex flex-col items-center justify-center pt-16 pb-6 px-8 overflow-hidden">
         {/* Background Depth Elements */}
         <div className="absolute inset-0 z-0 opacity-30">
-          <div className="floating-orb w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] absolute -top-40 -left-40" />
-          <div className="floating-orb w-[800px] h-[800px] bg-white/5 rounded-full blur-[150px] absolute top-40 -right-40" />
+          <div className="floating-orb w-[600px] h-[600px] bg-accent/10 rounded-full blur-[150px] absolute -top-60 -left-60" />
+          <div className="floating-orb w-[800px] h-[800px] bg-white/5 rounded-full blur-[180px] absolute top-60 -right-60" />
         </div>
 
         {/* Hero Content */}
-        <div className="hero-elem mb-6">
-          <span className="px-4 py-1.5 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-2">
+        <div className="hero-elem mb-2">
+          <span className="px-4 py-1 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             VoxChain Protocol v2.0
           </span>
         </div>
 
-        <h1 className="hero-elem font-heading text-6xl md:text-8xl font-bold text-center leading-[1.05] max-w-5xl tracking-tighter z-10 relative">
-          The Future of Civic Trust.
+        <h1 className="hero-elem flex flex-col items-center text-center font-[family-name:var(--font-syne)] font-black tracking-tighter z-10 my-6 select-none">
+          <span className="text-5xl md:text-8xl lg:text-9xl leading-[0.8] uppercase flex items-baseline gap-1">
+            The Future <span className="lowercase font-light opacity-40 text-[0.35em] tracking-normal translate-y-[-0.1em]">of</span>
+          </span>
+          <span className="text-5xl md:text-8xl lg:text-9xl leading-[0.8] uppercase text-white">
+            Civic Trust.
+          </span>
         </h1>
 
 
-        <p className="hero-elem mt-8 text-lg text-text-secondary max-w-xl text-center font-medium leading-relaxed z-10 relative">
-          A minimalist, Zero-Knowledge educational platform reimagined in 3D. Understand the timeline, trust the process.
+        <p className="hero-elem mt-1 text-sm md:text-base text-text-secondary max-w-xl text-center font-medium leading-relaxed z-10 relative">
+          Zero-Knowledge educational platform. Understand the timeline, trust the process.
         </p>
 
         {/* ── Search Bar ── */}
-        <div className="hero-elem mt-16 w-full max-w-2xl z-10 relative perspective-container">
+        <div className="hero-elem mt-2 w-full max-w-2xl z-10 relative perspective-container">
 
           <form
             onSubmit={handleAsk}
