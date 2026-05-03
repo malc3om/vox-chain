@@ -5,7 +5,7 @@
                                                  ╚██╗ ██╔╝██║   ██║ ██╔██╗ ██║     ██╔══██║██╔══██║██║██║╚██╗██║
                                                   ╚████╔╝ ╚██████╔╝██╔╝ ██╗╚██████╗██║  ██║██║  ██║██║██║ ╚████║
                                                    ╚═══╝   ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
-</pre></code><br>VOXCHAIN</p>
+
 
 <p align="center">
   <strong>Institutional Web3 Civic Intelligence Platform</strong><br>
