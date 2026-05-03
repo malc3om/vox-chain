@@ -25,7 +25,6 @@ export default function GSAPAnimations({
       });
 
       // 2. Hero Parallax Scroll Effect
-      // Fixed: limit the trigger to the hero section to prevent opacity dropping to 0 for the whole page scroll
       gsap.to(".hero-elem", {
         scrollTrigger: {
           trigger: ".hero-section",
@@ -39,7 +38,7 @@ export default function GSAPAnimations({
       });
 
       // 3. Features Staggered Reveal
-      // Fixed: Use toggleActions instead of scrub so it stays visible when scrolling back up
+      // Fixed: Use once: true to prevent content disappearing when scrolling up
       gsap.fromTo(
         ".feature-card",
         { y: 100, opacity: 0, scale: 0.9 },
@@ -47,7 +46,7 @@ export default function GSAPAnimations({
           scrollTrigger: {
             trigger: ".features-section",
             start: "top 80%",
-            toggleActions: "play none none reverse",
+            once: true,
           },
           y: 0,
           opacity: 1,
@@ -59,7 +58,7 @@ export default function GSAPAnimations({
       );
 
       // 4. How It Works - Reveal
-      // Fixed: Use toggleActions to prevent disappearing on scroll up
+      // Fixed: Use once: true
       const steps = gsap.utils.toArray(".step-card");
       steps.forEach((step: any, i) => {
         gsap.fromTo(
@@ -69,7 +68,7 @@ export default function GSAPAnimations({
             scrollTrigger: {
               trigger: step,
               start: "top 85%",
-              toggleActions: "play none none reverse",
+              once: true,
             },
             x: 0,
             opacity: 1,
@@ -87,7 +86,7 @@ export default function GSAPAnimations({
           scrollTrigger: {
             trigger: ".timeline-section",
             start: "top 75%",
-            toggleActions: "play none none reverse",
+            once: true,
           },
           y: 0,
           opacity: 1,
@@ -133,3 +132,4 @@ export default function GSAPAnimations({
 
   return null;
 }
+
