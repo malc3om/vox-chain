@@ -159,14 +159,9 @@ export function getFirebaseAuth(): Auth {
  */
 export async function signInWithGoogle(): Promise<UserCredential | null> {
   if (!isFirebaseConfigured()) return null;
-  try {
-    const auth = getFirebaseAuth();
-    const result = await signInWithPopup(auth, googleProvider);
-    return result;
-  } catch (err) {
-    console.warn("[VoxChain] Google Sign-In failed:", err);
-    return null;
-  }
+  const auth = getFirebaseAuth();
+  const result = await signInWithPopup(auth, googleProvider);
+  return result;
 }
 
 /**

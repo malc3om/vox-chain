@@ -2,6 +2,7 @@
 
 import { WalletProvider } from "@/components/wallet/WalletProvider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { LenisProvider } from "@/components/providers/LenisProvider";
 import type { ReactNode } from "react";
 
 /**
@@ -11,7 +12,9 @@ import type { ReactNode } from "react";
 export default function Providers({ children }: { children: ReactNode }) {
   return (
     <WalletProvider>
-      <LanguageProvider>{children}</LanguageProvider>
+      <LanguageProvider>
+        <LenisProvider>{children}</LenisProvider>
+      </LanguageProvider>
     </WalletProvider>
   );
 }

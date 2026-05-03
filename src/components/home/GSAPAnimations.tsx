@@ -9,8 +9,10 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export default function GSAPAnimations({
   containerRef,
+  ribbonRef,
 }: {
   containerRef: RefObject<HTMLDivElement | null>;
+  ribbonRef: RefObject<HTMLDivElement | null>;
 }) {
   useGSAP(
     () => {
@@ -37,7 +39,6 @@ export default function GSAPAnimations({
       });
 
       // 3. Features Staggered Reveal
-      // Fixed: Use once: true to prevent content disappearing when scrolling up
       gsap.fromTo(
         ".feature-card",
         { y: 100, opacity: 0, scale: 0.9 },
@@ -56,79 +57,94 @@ export default function GSAPAnimations({
         }
       );
 
-      // 4. How It Works - Reveal
-      // Fixed: Use once: true
+      // 4. How It Works - Reveal (Architectural Fade Up)
       const steps = gsap.utils.toArray(".step-card");
       steps.forEach((step: any, i) => {
         gsap.fromTo(
           step,
-          { x: i % 2 === 0 ? -100 : 100, opacity: 0 },
+          { y: 80, opacity: 0, filter: "blur(8px)" },
           {
             scrollTrigger: {
               trigger: step,
-              start: "top 85%",
+              start: "top 90%",
               once: true,
             },
-            x: 0,
+            y: 0,
             opacity: 1,
-            duration: 1,
-            ease: "back.out(1.2)",
+            filter: "blur(0px)",
+            duration: 1.2,
+            delay: i * 0.1,
+            ease: "expo.out",
           }
         );
       });
 
-      // 5. Timeline Nodes Animation
+      // 5. Timeline Nodes Animation (Isometric Reveal)
       gsap.fromTo(
-        ".timeline-node",
-        { y: 50, opacity: 0 },
+        ".isometric-node",
+        { 
+          y: 60, 
+          opacity: 0, 
+          rotateX: 45, 
+          rotateZ: -45,
+          scale: 0.8
+        },
         {
           scrollTrigger: {
             trigger: ".timeline-section",
-            start: "top 75%",
+            start: "top 80%",
             once: true,
           },
           y: 0,
           opacity: 1,
-          duration: 0.6,
-          stagger: 0.2,
-          ease: "power2.out",
+          scale: 1,
+          duration: 1.5,
+          stagger: {
+            each: 0.2,
+            from: "start"
+          },
+          ease: "power4.out",
         }
       );
 
-      // 6. Ribbon Infinite Marquee
-      gsap.to(".ribbon-content", {
-        xPercent: -50,
-        ease: "none",
-        duration: 20,
-        repeat: -1,
-      });
+      // 7. Ribbon Infinite Marquee - Fixed with Ref targeting
+      if (ribbonRef.current) {
+        gsap.to(ribbonRef.current, {
+          xPercent: -50,
+          ease: "none",
+          duration: 20,
+          repeat: -1,
+        });
+      }
 
-      // 7. Floating background orbs parallax + constant drift
-      gsap.to(".floating-orb", {
-        y: "random(-60, 60)",
-        x: "random(-60, 60)",
-        scale: "random(0.8, 1.2)",
-        duration: 6,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: 1.5,
-      });
+      // 8. Floating background orbs parallax + constant drift
+      const orbs = document.querySelectorAll(".floating-orb");
+      if (orbs.length > 0) {
+        gsap.to(".floating-orb", {
+          y: "random(-60, 60)",
+          x: "random(-60, 60)",
+          scale: "random(0.8, 1.2)",
+          duration: 6,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          stagger: 1.5,
+        });
 
-      gsap.to(".floating-orb", {
-        scrollTrigger: {
-          trigger: ".how-it-works-section",
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 2,
-        },
-        y: -200,
-        ease: "none",
-      });
+        gsap.to(".floating-orb", {
+          scrollTrigger: {
+            trigger: ".timeline-section",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 2,
+          },
+          y: -200,
+          ease: "none",
+        });
+      }
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [] }
   );
 
   return null;
 }
-

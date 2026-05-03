@@ -4,15 +4,14 @@ import { useState, useRef, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { ArrowRight, Shield, Cpu, HelpCircle, Activity, type LucideIcon } from "lucide-react";
 
-// ── Dynamic GSAP import — keeps initial JS bundle smaller ──
+// ── Dynamic GSAP import ──
 const GSAPAnimations = dynamic(
   () => import("@/components/home/GSAPAnimations"),
   { ssr: false }
 );
-
-// ── Static feature data (const assertion for type narrowing) ──
 
 interface FeatureItem {
   icon: LucideIcon;
@@ -25,110 +24,135 @@ const FEATURES: readonly FeatureItem[] = [
   {
     icon: HelpCircle,
     title: "Ask AI",
-    description: "Get answers to any election question in plain language",
+    description: "Deep-dive into election mechanics with Gemini",
     href: "/ask",
   },
   {
     icon: Activity,
     title: "Timeline",
-    description: "Track election phases as immutable on-chain milestones",
+    description: "3D visualization of the election cycle",
     href: "/timeline",
   },
   {
     icon: Shield,
     title: "Eligibility",
-    description: "Prove you can vote without revealing who you are",
+    description: "Verify your vote with Zero-Knowledge proofs",
     href: "/eligibility",
   },
   {
     icon: Cpu,
     title: "Quiz",
-    description: "Test your civic knowledge with AI-adaptive questions",
+    description: "Interactive civic knowledge assessment",
     href: "/quiz",
   },
 ] as const;
 
-const QUICK_PROMPTS = [
-  "How is my vote counted?",
-  "What happens after polls close?",
-  "Am I eligible to vote?",
+const TIMELINE_PHASES = [
+  {
+    title: "Registration",
+    desc: "Voter roll verification via ZK-Eligibility.",
+    detailedDesc: "The protocol uses Zero-Knowledge proofs to verify your identity against the official voter database without ever exposing your private data on-chain. This ensures only eligible citizens can participate while maintaining absolute anonymity.",
+    color: "var(--color-accent)",
+  },
+  {
+    title: "Primaries",
+    desc: "Selecting party representatives privately.",
+    detailedDesc: "In this phase, individual party members cast their ballots using private state transactions. The Midnight Network aggregates these results to select candidates while keeping individual preferences completely hidden from public view.",
+    color: "#a1a1aa",
+  },
+  {
+    title: "General Election",
+    desc: "The final ballot on the Midnight Network.",
+    detailedDesc: "The main event where all verified voters cast their final choice. Every vote is an immutable ZK-proof, ensuring the result is mathematically verifiable by anyone while keeping the specific choice of each voter private.",
+    color: "var(--color-accent)",
+  },
+  {
+    title: "Certification",
+    desc: "Immutable results verification and audit.",
+    detailedDesc: "After the voting period ends, the network automatically certifies the results. Using public ZK-summaries, citizens can verify the final tally's integrity without needing a central authority to 'trust'.",
+    color: "#a1a1aa",
+  },
 ] as const;
 
-const HOW_IT_WORKS_STEPS = [
-  {
-    step: "01",
-    title: "Input Privately",
-    desc: "Enter your age and constituency. This data never leaves your device and is kept entirely local.",
-  },
-  {
-    step: "02",
-    title: "Generate Proof",
-    desc: "A ZK proof is created locally that proves your eligibility mathematically, without revealing details.",
-  },
-  {
-    step: "03",
-    title: "Verify On-Chain",
-    desc: "The proof is verified on the Midnight Network. You're marked eligible — cryptographically and privately.",
-  },
-] as const;
-
-// ── Memoized sub-components for render efficiency ──
+// ── Memoized sub-components ──
 
 const FeatureCard = memo(function FeatureCard({ feature }: { feature: FeatureItem }) {
   const Icon = feature.icon;
   return (
-    <Link href={feature.href} className="feature-card block">
-      <div className="premium-card p-8 h-full flex flex-col justify-between group">
-        <div>
-          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-text-primary mb-6 group-hover:scale-110 transition-transform duration-500 group-hover:bg-white/10">
-            <Icon className="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity" />
+    <Link href={feature.href} className="feature-card block h-full">
+      <div className="glass-pane premium-card p-8 h-full flex flex-col items-center text-center justify-between group">
+        <div className="flex flex-col items-center">
+          <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform duration-700 group-hover:bg-accent/10 group-hover:border-accent/30 shadow-inner">
+            <Icon className="w-7 h-7 opacity-80 group-hover:opacity-100 transition-opacity" />
           </div>
-          <h3 className="font-heading font-medium text-xl text-text-primary mb-3">
+          <h3 className="font-heading font-bold text-2xl text-text-primary mb-4 tracking-tight">
             {feature.title}
           </h3>
-          <p className="text-sm text-text-muted leading-relaxed">
+          <p className="text-base text-text-secondary leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
             {feature.description}
           </p>
         </div>
-        <div className="mt-8 flex items-center text-text-secondary text-sm font-medium group-hover:text-white transition-colors">
-          Explore
-          <ArrowRight className="w-4 h-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+        <div className="mt-10 flex items-center justify-center text-accent text-[10px] font-mono font-bold uppercase tracking-[0.2em] group-hover:translate-y-[-4px] transition-transform duration-500">
+          Access Module
+          <ArrowRight className="w-3 h-3 ml-3" />
         </div>
       </div>
     </Link>
   );
 });
 
-const StepCard = memo(function StepCard({
-  step,
-  title,
-  desc,
-}: {
-  step: string;
-  title: string;
-  desc: string;
+const TimelineNode = memo(function TimelineNode({ 
+  title, 
+  desc, 
+  detailedDesc,
+  index 
+}: { 
+  title: string; 
+  desc: string; 
+  detailedDesc: string;
+  index: number 
 }) {
   return (
-    <div className="step-card premium-card p-10 relative overflow-hidden group">
-      <div className="text-6xl font-heading font-light text-white/5 absolute top-4 right-4 group-hover:scale-110 transition-transform duration-700">
-        {step}
+    <div className="timeline-node-container perspective-container flex-1 h-[450px] group relative hover:z-50 transition-all duration-300">
+      {/* The Main Isometric Card */}
+      <div className="isometric-node glass-pane p-10 h-full flex flex-col justify-end relative overflow-hidden border-r border-b border-accent/10 hover:border-accent/60 z-20 transition-all duration-700">
+        <div className="absolute top-6 right-6 text-6xl font-heading font-black text-accent/5 group-hover:text-accent/10 transition-colors pointer-events-none">
+          0{index + 1}
+        </div>
+        
+        <div className="relative z-10 transition-transform duration-700 group-hover:-translate-y-4">
+          <h4 className="font-heading text-2xl font-black text-accent mb-4 uppercase tracking-tighter leading-none">{title}</h4>
+          <p className="text-sm text-text-secondary leading-relaxed font-medium opacity-70 group-hover:opacity-100 transition-opacity">{desc}</p>
+        </div>
+ 
+        {/* The "Timeline Reveal" - Detailed Info Pane */}
+        <div className="absolute inset-0 bg-bg-matte/95 p-8 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) z-20 border border-accent/20">
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="w-8 h-[1px] bg-accent" />
+            <span className="text-[10px] font-bold text-accent uppercase tracking-[0.3em] font-sans">Protocol Deep-Dive</span>
+          </div>
+          
+          <p className="text-[13px] text-text-primary leading-[1.8] font-mono opacity-90 max-w-[95%]">
+            {detailedDesc}
+          </p>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        {/* Depth shadow for 3D feel */}
+        <div className="absolute inset-0 bg-accent/5 -z-10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
-      <h3 className="font-heading font-medium text-2xl mb-4 text-text-primary mt-12 relative z-10">
-        {title}
-      </h3>
-      <p className="text-sm text-text-muted leading-relaxed relative z-10">
-        {desc}
-      </p>
+
+      {/* The Connecting "Timeline" String */}
+      <div className="absolute top-1/2 -left-4 w-8 h-[2px] bg-gradient-to-r from-transparent to-accent/20 -translate-y-1/2 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden lg:block" />
     </div>
   );
 });
-
-// ── Main Page Component ──
 
 export default function Home() {
   const [query, setQuery] = useState("");
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
+  const ribbonRef = useRef<HTMLDivElement>(null);
 
   const handleAsk = useCallback(
     (e: React.FormEvent) => {
@@ -141,97 +165,122 @@ export default function Home() {
     [query, router]
   );
 
-  const handleQuickPrompt = useCallback(
-    (prompt: string) => {
-      setQuery(prompt);
-      router.push(`/ask?q=${encodeURIComponent(prompt)}`);
-    },
-    [router]
-  );
-
   return (
-    <div className="flex flex-col items-center min-h-screen" ref={container}>
-      {/* Dynamically loaded GSAP animations — only on client */}
-      <GSAPAnimations containerRef={container} />
+    <div className="flex flex-col items-center min-h-screen bg-bg-deep text-text-primary selection:bg-accent selection:text-bg-deep" ref={container}>
+      <GSAPAnimations containerRef={container} ribbonRef={ribbonRef} />
 
-      {/* ── Hero Section ─────────────────── */}
-      <section className="hero-section relative w-full flex flex-col items-center justify-center pt-40 pb-32 px-[var(--spacing-page)] overflow-hidden">
-        {/* Badge */}
-        <div className="hero-elem mb-8 z-10 relative">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-medium tracking-wide text-text-secondary">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-            </span>
-            POWERED BY MIDNIGHT NETWORK ZK PROOFS
-          </div>
+      {/* ── 3D Hero Section ────────────────── */}
+      <section className="hero-section relative w-full flex flex-col items-center justify-center pt-48 pb-40 px-8 overflow-hidden">
+        {/* Background Depth Elements */}
+        <div className="absolute inset-0 z-0 opacity-30">
+          <div className="floating-orb w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] absolute -top-40 -left-40" />
+          <div className="floating-orb w-[800px] h-[800px] bg-white/5 rounded-full blur-[150px] absolute top-40 -right-40" />
         </div>
 
-        {/* Headline */}
-        <h1 className="hero-elem font-heading text-5xl md:text-7xl lg:text-8xl font-medium text-center leading-[1.1] max-w-5xl tracking-tight z-10 relative text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
-          Understand your vote.
-          <br />
-          Trust nothing revealed.
+        {/* Hero Content */}
+        <div className="hero-elem mb-6">
+          <span className="px-4 py-1.5 rounded-full bg-accent/5 border border-accent/20 text-[10px] font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            VoxChain Protocol v2.0
+          </span>
+        </div>
+
+        <h1 className="hero-elem font-heading text-6xl md:text-8xl font-bold text-center leading-[1.05] max-w-5xl tracking-tighter z-10 relative">
+          The Future of <span className="text-accent">Civic Trust.</span>
         </h1>
 
-        {/* Subtitle */}
-        <p className="hero-elem mt-8 text-lg md:text-xl text-text-secondary max-w-2xl text-center font-normal leading-relaxed z-10 relative">
-          Civic transparency and personal privacy are not opposites. Prove your
-          eligibility to vote without revealing who you are, where you live, or
-          how old you are.
+        <p className="hero-elem mt-8 text-lg text-text-secondary max-w-xl text-center font-medium leading-relaxed z-10 relative">
+          A minimalist, Zero-Knowledge educational platform reimagined in 3D. Understand the timeline, trust the process.
         </p>
 
-        {/* Search Bar */}
-        <form
-          onSubmit={handleAsk}
-          className="hero-elem mt-12 w-full max-w-2xl z-10 relative"
-        >
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-accent/30 to-zinc-500/10 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative bg-bg-surface border border-white/10 rounded-full flex items-center p-2 backdrop-blur-md transition-all duration-300 focus-within:border-white/30 focus-within:bg-bg-elevated shadow-2xl">
+        {/* ── Search Bar ── */}
+        <div className="hero-elem mt-16 w-full max-w-2xl z-10 relative perspective-container">
+
+          <form
+            onSubmit={handleAsk}
+            className="relative group transition-transform duration-500 hover:scale-[1.02]"
+          >
+            <div className="absolute -inset-1 bg-accent/20 rounded-2xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="glass-pane relative rounded-2xl flex items-center p-2 transition-all duration-300 focus-within:ring-1 focus-within:ring-accent/50">
               <input
                 id="hero-search-input"
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="What is the electoral college?"
-                className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted outline-none text-base md:text-lg px-6 w-full"
+                placeholder="How does voting verification work?"
+                className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted outline-none text-lg px-8 py-4 w-full font-medium"
               />
               <button
                 type="submit"
-                className="bg-accent text-bg-deep px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(253,224,71,0.2)]"
+                className="bg-accent text-bg-matte px-8 py-4 rounded-xl font-bold flex items-center gap-3 transition-all hover:bg-[#fff7ad] hover:shadow-[0_0_30px_var(--color-accent-glow)]"
                 id="hero-ask-btn"
               >
-                Ask VoxChain
-                <ArrowRight className="w-4 h-4" />
+                Ask AI
+                <ArrowRight className="w-5 h-5" />
               </button>
             </div>
-          </div>
-        </form>
-
-        {/* Quick prompts */}
-        <div className="hero-elem mt-10 flex flex-wrap justify-center gap-3 z-10 relative opacity-80">
-          {QUICK_PROMPTS.map((prompt) => (
-            <button
-              key={prompt}
-              onClick={() => handleQuickPrompt(prompt)}
-              className="text-sm text-text-secondary bg-white/5 border border-white/5 hover:border-white/20 hover:text-white px-4 py-2 rounded-full transition-all cursor-pointer backdrop-blur-sm"
-            >
-              {prompt}
-            </button>
-          ))}
+          </form>
         </div>
       </section>
 
-      {/* ── Features Grid ────────────────── */}
-      <section className="features-section w-full relative z-10 bg-bg-elevated/50 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-[var(--spacing-page)] py-24 border-t border-white/5">
-          <div className="mb-16 text-center max-w-4xl mx-auto">
-            <h2 className="font-heading text-3xl md:text-5xl font-medium mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
-              A Complete Civic Toolkit
+      {/* ── 3D Interactive Timeline ────────── */}
+      <section className="timeline-section w-full relative z-10 py-40 overflow-hidden bg-bg-matte">
+        {/* 3D Perspective Grid Background */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+          <div className="bg-grid-premium w-[200%] h-[200%] absolute -top-1/2 -left-1/2 rotate-12" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-8 relative z-10">
+          <div className="mb-32 flex flex-col md:flex-row justify-between items-end gap-8">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <span className="w-12 h-[1px] bg-accent" />
+                <span className="text-accent text-xs font-bold uppercase tracking-[0.3em]">Protocol Roadmap</span>
+              </div>
+              <h2 className="font-heading text-5xl md:text-7xl font-bold tracking-tighter mb-8">
+                Election <span className="text-accent">Timeline</span>
+              </h2>
+              <p className="text-text-secondary text-xl font-medium max-w-xl leading-relaxed">
+                A non-linear, 3D visualization of the electoral cycle. Each node represents a secure ZK-proof gate.
+              </p>
+            </div>
+            <div className="hidden md:flex flex-col items-end gap-4">
+              <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-text-muted">
+                <span>Navigate</span>
+                <div className="w-24 h-[1px] bg-white/10" />
+                <Activity className="w-4 h-4 text-accent" />
+              </div>
+            </div>
+          </div>
+
+          <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 perspective-container py-20">
+            {/* The 3D Timeline Rail */}
+            <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white/5 -translate-y-1/2 z-0 hidden lg:block overflow-hidden">
+              <div className="absolute inset-0 bg-accent/20 translate-x-[-100%] animate-[shimmer_3s_infinite]" />
+            </div>
+
+            {TIMELINE_PHASES.map((phase, i) => (
+              <TimelineNode 
+                key={phase.title} 
+                title={phase.title} 
+                desc={phase.desc} 
+                detailedDesc={phase.detailedDesc}
+                index={i} 
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features Matrix ────────────────── */}
+      <section className="features-section w-full relative z-10 py-40 border-t border-white/5 bg-bg-deep">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="flex flex-col items-center mb-24 text-center">
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter mb-6">
+              Core <span className="text-accent">Infrastructure</span>
             </h2>
-            <p className="text-text-secondary text-lg leading-relaxed">
-              VoxChain isn't just another voting app. It's a comprehensive civic education platform built with privacy-first principles. Explore AI-powered insights, track immutable timelines, and prove your voting eligibility.
+            <p className="text-text-muted max-w-2xl">
+              Modular components designed for maximum security and privacy in a decentralized civic landscape.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -242,121 +291,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Technology Deep Dive ────────── */}
-      <section className="technology-section w-full relative z-10 py-24 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-[var(--spacing-page)]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8 animate-slide-up">
-              <h2 className="font-heading text-4xl font-medium tracking-tight">
-                Built on Cutting-Edge Technology
-              </h2>
-              <div className="space-y-6">
-                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-accent transition-colors">
-                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
-                    <Shield className="text-accent w-6 h-6" /> Midnight Network & ZK
-                  </h3>
-                  <p className="text-text-secondary leading-relaxed">
-                    We use the Midnight Network's Compact smart contracts to implement true Zero-Knowledge (ZK) proofs. Your private data (witnesses) is computed locally, and only the cryptographic proof goes on-chain, ensuring absolute privacy.
-                  </p>
-                </div>
-                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-accent/50 transition-colors">
-                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
-                    <HelpCircle className="text-accent w-6 h-6" /> Google Gemini AI
-                  </h3>
-                  <p className="text-text-secondary leading-relaxed">
-                    Our civic assistant uses Google's Gemini SDK to provide unbiased, easily digestible answers to complex election questions, empowering you to make informed decisions.
-                  </p>
-                </div>
-                <div className="bg-bg-elevated p-6 rounded-2xl border border-glass-border hover:border-zinc-500 transition-colors">
-                  <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-3">
-                    <Activity className="text-zinc-400 w-6 h-6" /> Modern Web Stack
-                  </h3>
-                  <p className="text-text-secondary leading-relaxed">
-                    Powered by Next.js App Router, React 19, and Tailwind CSS. Deployed on Google Cloud Run for limitless scalability. Enhanced with GSAP ScrollTrigger for buttery smooth, scroll-driven animations.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="relative h-[600px] w-full rounded-3xl border border-white/10 bg-gradient-to-br from-bg-surface to-bg-elevated overflow-hidden shadow-2xl flex items-center justify-center">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-              <div className="relative z-10 text-center space-y-4">
-                <div className="w-24 h-24 mx-auto rounded-full bg-accent/20 border border-accent flex items-center justify-center shadow-[0_0_30px_rgba(253,224,71,0.2)]">
-                  <Cpu className="w-10 h-10 text-accent" />
-                </div>
-                <h3 className="text-2xl font-bold font-heading">Dual-State Architecture</h3>
-                <p className="text-sm text-text-muted max-w-xs mx-auto">Public Ledger + Private Local State = Absolute Voter Privacy.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── How It Works ─────────────────── */}
-      <section className="how-it-works-section w-full relative z-10 overflow-hidden">
-        {/* Animated Background Orbs */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center">
-          <div className="floating-orb w-96 h-96 bg-accent rounded-full blur-[100px] absolute -top-20 -left-20" />
-          <div className="floating-orb w-[500px] h-[500px] bg-zinc-600 rounded-full blur-[120px] absolute top-40 right-10" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-[var(--spacing-page)] py-32 border-t border-white/5 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="font-heading text-4xl md:text-5xl font-medium mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
-              How Zero-Knowledge Works
-            </h2>
-            <p className="text-text-secondary text-lg leading-relaxed">
-              Prove facts about yourself without revealing the facts themselves.
-              Powered by Midnight Network.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {HOW_IT_WORKS_STEPS.map((item) => (
-              <StepCard
-                key={item.step}
-                step={item.step}
-                title={item.title}
-                desc={item.desc}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Election Timeline Overview ──── */}
-      <section className="timeline-section w-full relative z-10 py-32 border-t border-white/5 bg-bg-deep/50">
-        <div className="max-w-5xl mx-auto px-[var(--spacing-page)] text-center">
-          <h2 className="font-heading text-4xl font-medium mb-16 tracking-tight">
-            The Election Journey
-          </h2>
-          <div className="relative border-l border-white/10 ml-4 md:mx-auto md:border-l-0 md:border-t md:flex md:justify-between md:pt-10">
-            {["Registration", "Campaigning", "Voting Day", "Tally & Audit", "Results"].map((phase, i) => (
-              <div key={phase} className="timeline-node relative pl-8 pb-10 md:pl-0 md:pb-0 md:flex-1 md:text-center group">
-                {/* Node Dot */}
-                <div className="absolute left-[-5px] top-0 md:top-[-45px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-accent/20 group-hover:bg-accent group-hover:shadow-[0_0_15px_rgba(253,224,71,0.5)] transition-all duration-300" />
-                <h4 className="text-xl font-medium text-white mb-2">{phase}</h4>
-                <p className="text-sm text-text-muted">Phase {i + 1}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Moving Ribbon Marquee ───────── */}
-      <div className="ribbon-container relative w-full overflow-hidden bg-bg-elevated text-accent py-4 z-20 rotate-1 border-y border-accent/10 shadow-2xl">
-        <div className="ribbon-content whitespace-nowrap flex font-heading text-xl font-bold uppercase tracking-widest items-center">
+      {/* ── Animated Ribbon ────────────────── */}
+      <div className="ribbon-container relative w-full overflow-hidden bg-accent text-bg-matte py-6 z-20 -rotate-1 border-y border-white/10 shadow-2xl">
+        <div ref={ribbonRef} className="ribbon-content whitespace-nowrap flex font-heading text-2xl font-black uppercase tracking-tighter items-center">
           {[...Array(10)].map((_, i) => (
-            <span key={i} className="mx-6 flex items-center gap-4">
-              <Shield className="w-5 h-5" />
+            <span key={i} className="mx-12 flex items-center gap-6">
+              <Shield className="w-6 h-6" />
               Privacy First
-              <span className="mx-4 text-accent/50">•</span>
-              Zero-Knowledge Proofs
-              <span className="mx-4 text-accent/50">•</span>
-              Immutable Records
+              <span className="w-2 h-2 rounded-full bg-bg-matte" />
+              Zero-Knowledge
+              <span className="w-2 h-2 rounded-full bg-bg-matte" />
+              Immutable Results
             </span>
           ))}
         </div>
       </div>
+
+      <footer className="w-full py-20 px-8 text-center text-text-muted text-xs font-bold uppercase tracking-widest border-t border-white/5">
+        &copy; 2026 VoxChain Protocol • Built on Midnight Network
+      </footer>
     </div>
   );
 }
+

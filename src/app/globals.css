@@ -6,37 +6,119 @@
    ═══════════════════════════════════════ */
 
 @theme inline {
-  /* Web3 Premium Palette: Grey & Light Yellow */
-  --color-primary: #fefce8; /* yellow-50 */
-  --color-primary-dark: #fde047; /* yellow-300 */
-  --color-secondary: #d4d4d8; /* zinc-300 */
-  --color-accent: #fde047; /* yellow-300 */
-  --color-accent-muted: rgba(253, 224, 71, 0.1);
+  /* Stitch-Generated Design System: VoxChain 3D Reimagined */
+  --color-primary: #efff8f; /* Lite Yellow */
+  --color-accent: #efff8f;  /* Lite Yellow */
+  --color-accent-glow: rgba(239, 255, 143, 0.4);
   
-  /* Backgrounds (Rich Greys) */
-  --color-bg-deep: #09090b; /* zinc-950 */
-  --color-bg-surface: #121212;
-  --color-bg-elevated: #1a1a1a;
-  --color-bg-hover: #222222;
+  /* Backgrounds (Deep Matte Greys) */
+  --color-bg-deep: #121212;
+  --color-bg-surface: #1a1a1a;
+  --color-bg-elevated: #2a2a2a;
+  --color-bg-matte: #0d0e0f;
 
   /* Text */
-  --color-text-primary: #fafafa;
-  --color-text-secondary: #a1a1aa; /* zinc-400 */
-  --color-text-muted: #52525b; /* zinc-600 */
+  --color-text-primary: #e3e2e2;
+  --color-text-secondary: #c4c7c7;
+  --color-text-muted: #808080;
 
-  /* Borders & Glass */
-  --color-border: rgba(253, 224, 71, 0.1);
-  --color-border-bright: rgba(253, 224, 71, 0.3);
-  --color-glass-bg: rgba(9, 9, 11, 0.7);
+  /* Glassmorphism */
+  --color-glass-border: rgba(227, 226, 226, 0.1);
+  --color-glass-fill: rgba(18, 18, 18, 0.4);
 
   /* Typography */
   --font-heading: var(--font-space-grotesk);
   --font-body: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-
-  /* Spacing */
-  --spacing-page: 2rem;
 }
+
+@layer base {
+  body {
+    @apply bg-bg-deep text-text-primary font-sans antialiased;
+  }
+}
+
+/* ── Scribble Animation ── */
+.scribble-text {
+  position: relative;
+  display: inline-block;
+}
+
+.scribble-text svg {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 0.5em;
+  pointer-events: none;
+}
+
+.scribble-text path {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: scribble-draw 1.5s ease-out forwards;
+}
+
+@keyframes scribble-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+@layer components {
+  .glass-pane {
+    background: var(--color-glass-fill);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .nav-pill {
+    background: var(--color-glass-fill);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    @apply px-8 py-3 rounded-full border border-white/10 flex items-center gap-2 transition-all duration-500 hover:border-accent/40;
+  }
+
+  .utility-button {
+    background: var(--color-glass-fill);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    @apply px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border border-white/5 transition-all duration-300 hover:border-accent/30 hover:scale-105;
+  }
+}
+
+/* ── 3D & Isometric Utilities ──────────────── */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.isometric-node {
+  transform: rotateX(45deg) rotateZ(-45deg);
+  transform-style: preserve-3d;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.isometric-node:hover {
+  transform: rotateX(0deg) rotateZ(0deg) translateZ(100px) translateY(-40px) !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+  border-color: var(--color-accent);
+  z-index: 50;
+}
+
+.utility-stack {
+  @apply fixed top-8 right-8 flex flex-col items-end gap-3 z-50;
+}
+
 
 /* ── Global Styles ────────────────────── */
 
@@ -180,6 +262,12 @@ body {
 @keyframes typing {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
 }
 
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
