@@ -343,15 +343,15 @@ export default function Home() {
       </section>
 
       {/* ── Moving Ribbon Marquee ───────── */}
-      <div className="ribbon-container relative w-full overflow-hidden bg-accent text-bg-deep py-4 z-20 rotate-1 border-y border-white/20 shadow-2xl">
+      <div className="ribbon-container relative w-full overflow-hidden bg-gray-800 text-yellow-100 py-4 z-20 rotate-1 border-y border-gray-700 shadow-2xl">
         <div className="ribbon-content whitespace-nowrap flex font-heading text-xl font-bold uppercase tracking-widest items-center">
           {[...Array(10)].map((_, i) => (
             <span key={i} className="mx-6 flex items-center gap-4">
               <Shield className="w-5 h-5" />
               Privacy First
-              <span className="mx-4 text-bg-deep/50">•</span>
+              <span className="mx-4 text-yellow-100/50">•</span>
               Zero-Knowledge Proofs
-              <span className="mx-4 text-bg-deep/50">•</span>
+              <span className="mx-4 text-yellow-100/50">•</span>
               Immutable Records
             </span>
           ))}
