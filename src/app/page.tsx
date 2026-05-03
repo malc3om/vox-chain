@@ -155,7 +155,7 @@ export default function Home() {
       <GSAPAnimations containerRef={container} />
 
       {/* ── Hero Section ─────────────────── */}
-      <section className="relative w-full flex flex-col items-center justify-center pt-40 pb-32 px-[var(--spacing-page)] overflow-hidden">
+      <section className="hero-section relative w-full flex flex-col items-center justify-center pt-40 pb-32 px-[var(--spacing-page)] overflow-hidden">
         {/* Badge */}
         <div className="hero-elem mb-8 z-10 relative">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-xs font-medium tracking-wide text-text-secondary">
@@ -322,6 +322,41 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Election Timeline Overview ──── */}
+      <section className="timeline-section w-full relative z-10 py-32 border-t border-white/5 bg-bg-deep/50">
+        <div className="max-w-5xl mx-auto px-[var(--spacing-page)] text-center">
+          <h2 className="font-heading text-4xl font-medium mb-16 tracking-tight">
+            The Election Journey
+          </h2>
+          <div className="relative border-l border-white/10 ml-4 md:mx-auto md:border-l-0 md:border-t md:flex md:justify-between md:pt-10">
+            {["Registration", "Campaigning", "Voting Day", "Tally & Audit", "Results"].map((phase, i) => (
+              <div key={phase} className="timeline-node relative pl-8 pb-10 md:pl-0 md:pb-0 md:flex-1 md:text-center group">
+                {/* Node Dot */}
+                <div className="absolute left-[-5px] top-0 md:top-[-45px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-white/20 group-hover:bg-accent group-hover:shadow-[0_0_15px_rgba(var(--color-accent),0.5)] transition-all duration-300" />
+                <h4 className="text-xl font-medium text-white mb-2">{phase}</h4>
+                <p className="text-sm text-text-muted">Phase {i + 1}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Moving Ribbon Marquee ───────── */}
+      <div className="ribbon-container relative w-full overflow-hidden bg-accent text-bg-deep py-4 z-20 rotate-1 border-y border-white/20 shadow-2xl">
+        <div className="ribbon-content whitespace-nowrap flex font-heading text-xl font-bold uppercase tracking-widest items-center">
+          {[...Array(10)].map((_, i) => (
+            <span key={i} className="mx-6 flex items-center gap-4">
+              <Shield className="w-5 h-5" />
+              Privacy First
+              <span className="mx-4 text-bg-deep/50">•</span>
+              Zero-Knowledge Proofs
+              <span className="mx-4 text-bg-deep/50">•</span>
+              Immutable Records
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

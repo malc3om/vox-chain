@@ -27,6 +27,7 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -79,10 +80,19 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Invisible trigger zone at the top for hover detection */}
+      <div 
+        className="fixed top-0 left-0 right-0 h-16 z-[60]"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      />
+
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "glass-header py-3" : "bg-transparent py-5"
-        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled && !isHovered ? "-translate-y-full" : "translate-y-0"
+        } ${isScrolled ? "glass-header py-3 shadow-lg" : "bg-transparent py-5"}`}
       >
         <div className="max-w-7xl mx-auto px-[var(--spacing-page)] flex items-center justify-between">
           {/* Logo */}
