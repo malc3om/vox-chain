@@ -19,7 +19,7 @@ Building trust through transparency, security, and an uncompromisingly high-end 
 - ✓ Translation system integration.
 
 ### Active
-- [ ] Fix Google Authentication "unauthorized-domain" for localhost.
+- [x] Fix Google Authentication "unauthorized-domain" for localhost.
 - [ ] Implement Lenis for smooth buttery scrolling.
 - [ ] Refactor all section transitions to use GSAP ScrollTrigger for architectural reveals.
 - [ ] Optimize 3D asset loading and performance.

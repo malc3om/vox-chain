@@ -1,4 +1,3 @@
-// @ts-ignore
 
 import type { DAppConnectorAPI } from '@midnight-ntwrk/midnight-js-dapp-connector';
 

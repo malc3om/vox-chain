@@ -14,4 +14,4 @@ The user has requested the removal of misaligned "scribble" animations and the s
 - **Security**: Hardening Auth flows.
 
 ## Blockers
-- **Firebase Configuration**: Need to ensure `localhost` is authorized in the Firebase console (requires user action or MCP assistance).
+- **None**: All critical authentication and environment blockers have been resolved.
